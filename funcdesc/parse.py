@@ -68,4 +68,5 @@ def parse_func(func: T.Callable) -> Description:
     desc.inputs = inputs
     outputs = parse_func_outputs(sig, func_marks.output_marks)
     desc.outputs = outputs
+    desc.side_effects = func_marks.side_effect_marks
     return desc

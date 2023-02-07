@@ -1,6 +1,6 @@
 import typing as T
-from funcdesc.mark import Val, Outputs, mark_input, mark_output
-from funcdesc.desc import Value
+from funcdesc.mark import Val, Outputs, mark_input, mark_output, mark_side_effect
+from funcdesc.desc import Value, SideEffect
 from funcdesc.parse import parse_func
 
 
@@ -60,7 +60,9 @@ def test_mark():
     @mark_input(0, range=[0, 10])
     @mark_input("b", range=[10, 20])
     @mark_output(0, range=[0, 30])
+    @mark_side_effect(SideEffect("Print a string"))
     def add(a: int, b: int) -> int:
+        print("add")
         return a + b
 
     desc_add = parse_func(add)
@@ -68,3 +70,4 @@ def test_mark():
     assert desc_add.inputs[0].range == [0, 10]
     assert desc_add.inputs[1].range == [10, 20]
     assert desc_add.outputs[0].range == [0, 30]
+    assert isinstance(desc_add.side_effects[0], SideEffect)
