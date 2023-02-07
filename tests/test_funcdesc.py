@@ -1,3 +1,4 @@
+import typing as T
 from funcdesc.mark import Val, Outputs, mark_input, mark_output
 from funcdesc.desc import Value
 from funcdesc.parse import parse_func
@@ -48,13 +49,22 @@ def test_parse_function():
     desc_func4 = parse_func(func4)
     assert len(desc_func4.outputs) == 2
 
+    def func5(a: Val[int, [0, 10]]) -> T.Tuple[int, int]:
+        return a, a
+
+    desc_func5 = parse_func(func5)
+    assert len(desc_func5.outputs) == 2
+
 
 def test_mark():
     @mark_input(0, range=[0, 10])
-    @mark_input(1, range=[10, 20])
+    @mark_input("b", range=[10, 20])
+    @mark_output(0, range=[0, 30])
     def add(a: int, b: int) -> int:
         return a + b
 
     desc_add = parse_func(add)
     assert desc_add.inputs[0].type is int
     assert desc_add.inputs[0].range == [0, 10]
+    assert desc_add.inputs[1].range == [10, 20]
+    assert desc_add.outputs[0].range == [0, 30]

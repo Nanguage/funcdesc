@@ -25,7 +25,11 @@
 
 ## Features
 
-* TODO
+* Parse function to get a description object.
+* Mark function's inputs and outputs
+* Mark function's side effects
+* **TODO** Generate checker for functions
+* **TODO** Serialization / Deserialization of the description
 
 ## Credits
 

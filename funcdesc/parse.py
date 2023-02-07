@@ -33,16 +33,28 @@ def parse_func_inputs(
     return inputs
 
 
-def parse_func_outputs(sig: inspect.Signature) -> T.List[Value]:
+def parse_func_outputs(
+        sig: inspect.Signature,
+        marks: T.Dict[T.Union[int, str], dict]
+        ) -> T.List[Value]:
     outputs = []
     ret = sig.return_annotation
+    to_val = lambda o: o if isinstance(o, Value) else Value(o)
     if isinstance(ret, Value):
         outputs.append(ret)
     elif isinstance(ret, list):
-        outputs.extend(ret)
+        outputs.extend([to_val(o) for o in ret])
+    elif isinstance(ret, T._GenericAlias) and (ret._name == "Tuple"):  # type: ignore
+        outputs.extend([to_val(o) for o in ret.__args__])
     else:
         val: Value = Value(ret)
         outputs.append(val)
+
+    for idx, val in enumerate(outputs):
+        if idx in marks:
+            val.__dict__.update(marks[idx])
+        elif val.name in marks:
+            val.__dict__.update(marks[val.name])
     return outputs
 
 
@@ -54,6 +66,6 @@ def parse_func(func: T.Callable) -> Description:
         func_marks = FuncMarks()
     inputs = parse_func_inputs(sig, func_marks.input_marks)
     desc.inputs = inputs
-    outputs = parse_func_outputs(sig)
+    outputs = parse_func_outputs(sig, func_marks.output_marks)
     desc.outputs = outputs
     return desc
