@@ -1,4 +1,4 @@
-from funcdesc.mark import Val, Outputs
+from funcdesc.mark import Val, Outputs, mark_input, mark_output
 from funcdesc.desc import Value
 from funcdesc.parse import parse_func
 
@@ -35,3 +35,26 @@ def test_parse_function():
     desc_func2 = parse_func(func2)
     assert len(desc_func2.inputs) == 2
     assert desc_func2.inputs[1].default == 1
+
+    def func3(a: Val[int, [0, 10]]) -> Val[int]:
+        return a + 1
+
+    desc_func3 = parse_func(func3)
+    assert desc_func3.inputs[0].range == [0, 10]
+
+    def func4(a: Val[int, [0, 10]]) -> Outputs[int, int]:
+        return a, a
+
+    desc_func4 = parse_func(func4)
+    assert len(desc_func4.outputs) == 2
+
+
+def test_mark():
+    @mark_input(0, range=[0, 10])
+    @mark_input(1, range=[10, 20])
+    def add(a: int, b: int) -> int:
+        return a + b
+
+    desc_add = parse_func(add)
+    assert desc_add.inputs[0].type is int
+    assert desc_add.inputs[0].range == [0, 10]
