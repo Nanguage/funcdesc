@@ -57,7 +57,7 @@ def _mark_val_factory(store_key: T.Literal["input", "output"]):
         add_when_not_default(attrs, "range_", range_, None)
         add_when_not_default(attrs, "default", default, NotDef)
         add_when_not_default(attrs, "name", name, None)
-        
+
         def wrap(func: T.Callable) -> T.Callable:
             func.__dict__.setdefault(FUNC_MARK_STORE_KEY, FuncMarks())
             marks: FuncMarks = func.__dict__[FUNC_MARK_STORE_KEY]

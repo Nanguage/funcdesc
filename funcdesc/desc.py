@@ -18,7 +18,7 @@ RangeChecker = T.Callable[[T.Any, T.Any], bool]
 class Value(T.Generic[T1]):
     type_to_range_checker: T.Dict[type, TypeChecker] = {}
     type_to_type_checker: T.Dict[type, RangeChecker] = {}
-        
+
     def __init__(
             self,
             type_: T.Optional[T.Type[T1]] = None,
@@ -57,7 +57,8 @@ class Value(T.Generic[T1]):
     def check_range(self, val):
         if (self.range_checker is not None):
             if (not self.range_checker(val, self.range)):
-                raise ValueError(f"Value {val} is not in a valid range({self.range}).")
+                raise ValueError(
+                    f"Value {val} is not in a valid range({self.range}).")
 
     def check(self, val):
         if (self.range_checker is None) and (self.type_checker is None):

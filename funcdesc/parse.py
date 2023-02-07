@@ -39,12 +39,16 @@ def parse_func_outputs(
         ) -> T.List[Value]:
     outputs = []
     ret = sig.return_annotation
-    to_val = lambda o: o if isinstance(o, Value) else Value(o)
+
+    def to_val(o):
+        return o if isinstance(o, Value) else Value(o)
+
     if isinstance(ret, Value):
         outputs.append(ret)
     elif isinstance(ret, list):
         outputs.extend([to_val(o) for o in ret])
-    elif isinstance(ret, T._GenericAlias) and (ret._name == "Tuple"):  # type: ignore
+    elif isinstance(ret, T._GenericAlias) and \
+            (ret._name == "Tuple"):  # type: ignore
         outputs.extend([to_val(o) for o in ret.__args__])
     else:
         val: Value = Value(ret)
