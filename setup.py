@@ -25,12 +25,7 @@ def get_install_requirements():
 
 
 requires_test = ['pytest', 'pytest-cov', 'flake8', 'mypy']
-requires_doc = []
-with open("docs/requirements.txt") as f:
-    for line in f:
-        p = line.strip()
-        if p:
-            requires_doc.append(p)
+
 
 setup(
     author="Weize Xu",
@@ -59,7 +54,6 @@ setup(
     zip_safe=False,
     extra_requires={
         'test': requires_test,
-        'doc': requires_doc,
-        'dev': ["pip", "setuptools", "wheel", "twine", "ipdb"] + requires_test + requires_doc,
+        'dev': ["pip", "setuptools", "wheel", "twine", "ipdb"] + requires_test
     }
 )

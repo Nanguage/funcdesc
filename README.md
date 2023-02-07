@@ -10,15 +10,12 @@
     <a href="https://app.codecov.io/gh/Nanguage/funcdesc">
         <img src="https://codecov.io/gh/Nanguage/funcdesc/branch/master/graph/badge.svg" alt="codecov">
     </a>
-    <a href="https://funcdesc.readthedocs.io/en/latest/">
-    	<img src="https://readthedocs.org/projects/funcdesc/badge/?version=latest" alt="Documentation">
+    <a href="https://pypi.org/project/funcdesc/">
+      <img src="https://img.shields.io/pypi/v/funcdesc.svg" alt="Install with PyPi" />
     </a>
-  <a href="https://pypi.org/project/funcdesc/">
-    <img src="https://img.shields.io/pypi/v/funcdesc.svg" alt="Install with PyPi" />
-  </a>
-  <a href="https://github.com/Nanguage/funcdesc/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/Nanguage/funcdesc" alt="MIT license" />
-  </a>
+    <a href="https://github.com/Nanguage/funcdesc/blob/master/LICENSE">
+      <img src="https://img.shields.io/github/license/Nanguage/funcdesc" alt="MIT license" />
+    </a>
 </p>
 </div>
 
@@ -30,10 +27,3 @@
 * Mark function's side effects
 * **TODO** Generate checker for functions
 * **TODO** Serialization / Deserialization of the description
-
-## Credits
-
-This package was created with Cookiecutter and the `Nanguage/cookiecuter-pypackage` project template.
-
-+ Cookiecutter: https://github.com/audreyr/cookiecutter
-+ `Nanguage/cookiecutter-pypackage`: https://github.com/Nanguage/cookiecutter-pypackage
