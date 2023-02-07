@@ -1,4 +1,5 @@
 import typing as T
+from copy import copy
 
 
 class _NotDef:
@@ -96,3 +97,25 @@ class Description():
         self.inputs = [] if inputs is None else inputs
         self.outputs = [] if outputs is None else outputs
         self.side_effects = [] if side_effects is None else side_effects
+
+    def parse_pass_in(self, args: tuple, kwargs: dict) -> T.Dict[str, T.Any]:
+        """Get the pass in value of the func
+        arguments according to the inputs description."""
+
+        args_ = list(args)
+        kwargs = copy(kwargs)
+        res = {}
+        for val in self.inputs:
+            has_default = val.default is not NotDef
+            if len(args_) > 0:
+                res[val.name] = args_.pop(0)
+            elif (len(kwargs) > 0) and (val.name in kwargs):
+                res[val.name] = kwargs.pop(val.name)
+            else:
+                if has_default:
+                    res[val.name] = val.default
+                else:
+                    raise ValueError(
+                        f"{val.name} is not provided and has no default value."
+                    )
+        return res

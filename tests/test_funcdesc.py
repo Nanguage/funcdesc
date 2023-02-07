@@ -1,7 +1,10 @@
+import pytest
+
 import typing as T
 from funcdesc.mark import Val, Outputs, mark_input, mark_output, mark_side_effect
 from funcdesc.desc import Value, SideEffect
 from funcdesc.parse import parse_func
+from funcdesc.guard import guard, ValueCheckError
 
 
 def test_mark_Val():
@@ -71,3 +74,28 @@ def test_mark():
     assert desc_add.inputs[1].range == [10, 20]
     assert desc_add.outputs[0].range == [0, 30]
     assert isinstance(desc_add.side_effects[0], SideEffect)
+
+
+def test_guard():
+
+    @guard
+    @mark_input(0, range=[0, 10])
+    @mark_input("b", range=[10, 20])
+    @mark_output(0, range=[0, 30])
+    def add(a: int, b: int) -> int:
+        return a + b
+
+    assert add(5, 11) == 16
+
+    with pytest.raises(ValueCheckError):
+        add(-10, 1)
+
+    @guard(check_outputs=True)
+    @mark_input(0, range=[0, 10])
+    @mark_input("b", range=[10, 20])
+    @mark_output(0, range=[0, 30])
+    def add2(a: int, b: int) -> int:
+        return a + b + 100
+
+    with pytest.raises(ValueCheckError):
+        add2(1, 11)
