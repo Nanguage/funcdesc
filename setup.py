@@ -24,7 +24,10 @@ def get_install_requirements():
     return requirements
 
 
-requires_test = ['pytest', 'pytest-cov', 'flake8', 'mypy']
+requires_dev = [
+    "pip", "setuptools", "wheel", "twine", "ipdb",
+    'pytest', 'pytest-cov', 'flake8', 'mypy'
+]
 
 
 setup(
@@ -52,8 +55,7 @@ setup(
     url='https://github.com/Nanguage/funcdesc',
     version=get_version(),
     zip_safe=False,
-    extra_requires={
-        'test': requires_test,
-        'dev': ["pip", "setuptools", "wheel", "twine", "ipdb"] + requires_test
+    extras_require={
+        'dev': requires_dev
     }
 )
