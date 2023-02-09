@@ -92,4 +92,4 @@ def guard(
     }
     if func is None:
         return functools.partial(guard, **kwargs)
-    return Guard(func, **kwargs)
+    return Guard(func, **kwargs)  # type: ignore

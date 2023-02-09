@@ -51,6 +51,8 @@ def test_parse_function():
 
     desc_func4 = parse_func(func4)
     assert len(desc_func4.outputs) == 2
+    assert desc_func4.outputs[0].name == "output_0"
+    assert desc_func4.outputs[1].name == "output_1"
 
     def func5(a: Val[int, [0, 10]]) -> T.Tuple[int, int]:
         return a, a

@@ -17,7 +17,7 @@ class Val(metaclass=CreateByGetItem):
             type_: T.Optional[T.Type[T1]] = None,
             range_: T.Optional[T.Any] = None,
             default: T.Union[_NotDef, T1] = NotDef,
-            name: T.Optional[str] = None,
+            name: str = "?",
             ):
         return Value(type_, range_, default, name)
 

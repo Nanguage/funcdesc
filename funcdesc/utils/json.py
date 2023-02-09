@@ -13,7 +13,7 @@ class DescriptionJSONEncoder(json.JSONEncoder):
             }
         elif isinstance(o, Value):
             return {
-                "type": o.type.__name__,
+                "type": o.type.__name__ if o.type is not None else o.type,
                 "range": o.range,
                 "default": o.default,
             }

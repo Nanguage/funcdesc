@@ -5,6 +5,9 @@ from .desc import Description, Value
 from .mark import FUNC_MARK_STORE_KEY, FuncMarks
 
 
+GenericAlias = T._GenericAlias  # type: ignore
+
+
 def parse_func_inputs(
         sig: inspect.Signature,
         marks: T.Dict[T.Union[int, str], dict],
@@ -15,9 +18,11 @@ def parse_func_inputs(
         if isinstance(ann, Value):
             val = ann
         elif ann is inspect._empty:
-            val = Value(None, None, name=name)
+            val = Value(None)
         else:
-            val = Value(ann, None, name=name)
+            val = Value(ann)
+
+        val.name = name
 
         # set default value
         if param.default is not inspect._empty:
@@ -47,14 +52,17 @@ def parse_func_outputs(
         outputs.append(ret)
     elif isinstance(ret, list):
         outputs.extend([to_val(o) for o in ret])
-    elif isinstance(ret, T._GenericAlias) and \
-            (ret._name == "Tuple"):  # type: ignore
+    elif isinstance(ret, GenericAlias) and \
+            (ret._name == "Tuple"):
         outputs.extend([to_val(o) for o in ret.__args__])
     else:
         val: Value = Value(ret)
         outputs.append(val)
 
     for idx, val in enumerate(outputs):
+        if val.name == "?":
+            val.name = f"output_{idx}"
+
         if idx in marks:
             val.__dict__.update(marks[idx])
         elif val.name in marks:

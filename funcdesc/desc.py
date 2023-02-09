@@ -27,7 +27,7 @@ class Value(T.Generic[T1]):
             type_: T.Optional[T.Type[T1]] = None,
             range_: T.Optional[T.Any] = None,
             default: T.Union[_NotDef, T1] = NotDef,
-            name: T.Optional[str] = None,
+            name: str = "?",
             ):
         self.name = name
         self.type = type_
@@ -109,16 +109,17 @@ class Description():
         res = {}
         for val in self.inputs:
             has_default = val.default is not NotDef
+            name: str = val.name
             if len(args_) > 0:
-                res[val.name] = args_.pop(0)
-            elif (len(kwargs) > 0) and (val.name in kwargs):
-                res[val.name] = kwargs.pop(val.name)
+                res[name] = args_.pop(0)
+            elif (len(kwargs) > 0) and (name in kwargs):
+                res[name] = kwargs.pop(name)
             else:
                 if has_default:
-                    res[val.name] = val.default
+                    res[name] = val.default
                 else:
                     raise ValueError(
-                        f"{val.name} is not provided and has no default value."
+                        f"{name} is not provided and has no default value."
                     )
         return res
 
