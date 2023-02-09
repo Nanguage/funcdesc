@@ -44,7 +44,14 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
     ],
-    description="Establish a general function description protocol, which can realize a comprehensive description of the input, output and side effects of an target function through an Python object. Provide a unified abstraction for parameter checking, interface generation and other functions in applications such as oneFace.",
+    description=(
+        "Establish a general function description protocol, "
+        "which can realize a comprehensive description of the input, "
+        "output and side effects of an target function through "
+        "an Python object. Provide a unified abstraction for parameter "
+        "checking, interface generation and other functions "
+        "in applications such as oneFace."
+    ),
     install_requires=get_install_requirements(),
     license="MIT license",
     long_description=get_long_description(),
