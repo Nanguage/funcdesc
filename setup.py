@@ -9,6 +9,7 @@ from setuptools import setup, find_packages
 def get_long_description():
     return "See https://github.com/Nanguage/funcdesc"
 
+
 def get_version():
     with open("funcdesc/__init__.py") as f:
         for line in f.readlines():
