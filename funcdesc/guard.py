@@ -1,7 +1,7 @@
 import typing as T
 import functools
 
-from .desc import Value
+from .desc import Value, Description
 from .parse import parse_func
 
 
@@ -13,6 +13,7 @@ class Guard():
     def __init__(
             self,
             func: T.Callable,
+            desc: T.Optional[Description] = None,
             check_inputs: bool = True,
             check_outputs: bool = False,
             check_side_effect: bool = False,
@@ -21,7 +22,9 @@ class Guard():
             ) -> None:
         self.func = func
         functools.update_wrapper(self, func)
-        self.desc = parse_func(func)
+        if desc is None:
+            desc = parse_func(func)
+        self.desc = desc
         self.check_type = check_type
         self.check_range = check_range
         self.check_side_effect = check_side_effect
@@ -72,7 +75,21 @@ class Guard():
             errors.append(e)
 
 
-def guard(func: T.Optional[T.Callable] = None, **kwargs) -> T.Callable:
+def guard(
+        func: T.Optional[T.Callable] = None,
+        check_inputs: bool = True,
+        check_outputs: bool = False,
+        check_side_effect: bool = False,
+        check_type: bool = True,
+        check_range: bool = True,
+        ) -> T.Callable:
+    kwargs = {
+        "check_inputs": check_inputs,
+        "check_outputs": check_outputs,
+        "check_side_effect": check_side_effect,
+        "check_type": check_type,
+        "check_range": check_range,
+    }
     if func is None:
         return functools.partial(guard, **kwargs)
     return Guard(func, **kwargs)
