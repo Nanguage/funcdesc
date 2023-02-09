@@ -25,7 +25,10 @@
 * Parse function to get a description object.
 * Mark function's inputs and outputs
 * Mark function's side effects
-* Generate checker for functions
-  + Check inputs and outputs's type and range
-  + **TODO** Check side effects
-* **TODO** Serialization & Deserialization of the description
+* Generate checker(guard) for function
+  + Check inputs and outputs's type.
+  + Check inputs and outputs's range.
+  + **TODO** Check side-effect.
+* Serialization & Deserialization of the description
+  + Convert description object to JSON string.
+  + **TODO** Parse JSON string to get description object

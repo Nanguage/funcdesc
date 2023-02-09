@@ -108,3 +108,15 @@ def test_guard():
     add3_guard = Guard(add3, desc_add3)
     with pytest.raises(ValueCheckError):
         add3_guard(11)
+
+
+
+def test_serialization():
+    @mark_input(0, range=[0, 10])
+    @mark_input("b", range=[10, 20])
+    @mark_output(0, range=[0, 30])
+    def add(a: int, b: int) -> int:
+        return a + b
+
+    desc_add = parse_func(add)
+    desc_add.to_json()

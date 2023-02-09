@@ -1,6 +1,8 @@
 import typing as T
 from copy import copy
 
+from .utils.json import DescriptionJSONEncoder
+
 
 class _NotDef:
     pass
@@ -119,3 +121,7 @@ class Description():
                         f"{val.name} is not provided and has no default value."
                     )
         return res
+
+    def to_json(self) -> str:
+        json_str = DescriptionJSONEncoder().encode(self)
+        return json_str
