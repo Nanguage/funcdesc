@@ -15,7 +15,7 @@ class Guard():
             func: T.Callable,
             desc: T.Optional[Description] = None,
             check_inputs: bool = True,
-            check_outputs: bool = False,
+            check_outputs: bool = True,
             check_side_effect: bool = False,
             check_type: bool = True,
             check_range: bool = True,
@@ -75,8 +75,9 @@ class Guard():
             errors.append(e)
 
 
-def guard(
+def make_guard(
         func: T.Optional[T.Callable] = None,
+        *,
         check_inputs: bool = True,
         check_outputs: bool = False,
         check_side_effect: bool = False,
@@ -91,5 +92,5 @@ def guard(
         "check_range": check_range,
     }
     if func is None:
-        return functools.partial(guard, **kwargs)
+        return functools.partial(make_guard, **kwargs)
     return Guard(func, **kwargs)  # type: ignore

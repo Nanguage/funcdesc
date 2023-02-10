@@ -4,7 +4,7 @@ import typing as T
 from funcdesc.mark import Val, Outputs, mark_input, mark_output, mark_side_effect
 from funcdesc.desc import Value, SideEffect
 from funcdesc.parse import parse_func
-from funcdesc.guard import guard, Guard, ValueCheckError
+from funcdesc.guard import make_guard, Guard, ValueCheckError
 
 
 def test_mark_Val():
@@ -80,7 +80,7 @@ def test_mark():
 
 def test_guard():
 
-    @guard
+    @make_guard
     @mark_input(0, range=[0, 10])
     @mark_input("b", range=[10, 20])
     @mark_output(0, range=[0, 30])
@@ -92,7 +92,7 @@ def test_guard():
     with pytest.raises(ValueCheckError):
         add(-10, 1)
 
-    @guard(check_outputs=True)
+    @make_guard(check_outputs=True)
     @mark_input(0, range=[0, 10])
     @mark_input("b", range=[10, 20])
     @mark_output(0, range=[0, 30])

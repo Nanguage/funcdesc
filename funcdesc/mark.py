@@ -47,6 +47,7 @@ def _mark_val_factory(store_key: T.Literal["input", "output"]):
 
     def mark_val(
             pos_or_name: T.Union[int, str],
+            *,
             type_: T.Optional[T.Type[T1]] = None,
             range_: T.Optional[T.Any] = None,
             default: T.Union[_NotDef, T1] = NotDef,
