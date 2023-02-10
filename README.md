@@ -28,7 +28,7 @@
 * Generate checker(guard) for function
   + Check inputs and outputs's type.
   + Check inputs and outputs's range.
-  + **TODO** Check side-effect.
+  + Check side-effect.
 * Serialization & Deserialization of the description
   + Convert description object to JSON string.
   + **TODO** Parse JSON string to get description object

@@ -36,11 +36,17 @@ class Value(T.Generic[T1]):
 
     @property
     def type_checker(self):
-        return self.type_to_type_checker.get(self.type.__name__, None)
+        if self.type is None:
+            return None
+        else:
+            return self.type_to_type_checker.get(self.type.__name__, None)
 
     @property
     def range_checker(self):
-        return self.type_to_range_checker.get(self.type.__name__, None)
+        if self.type is None:
+            return None
+        else:
+            return self.type_to_range_checker.get(self.type.__name__, None)
 
     @classmethod
     def register_range_check(cls, type, checker):
@@ -79,7 +85,14 @@ Value.register_type_check(bool)
 
 class SideEffect():
     def __init__(self, description: str):
-        self.description = description
+        self._description = description
+
+    @property
+    def description(self) -> str:
+        return self._description
+
+    def check(self, inputs: dict, outputs: dict) -> bool:
+        return True
 
 
 class Description():

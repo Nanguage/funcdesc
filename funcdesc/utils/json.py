@@ -21,6 +21,7 @@ class DescriptionJSONEncoder(json.JSONEncoder):
             return "not_defined"
         elif isinstance(o, SideEffect):
             return {
+                "type": o.__class__.__name__,
                 "description": o.description,
             }
         else:

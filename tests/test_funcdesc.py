@@ -4,7 +4,7 @@ import typing as T
 from funcdesc.mark import Val, Outputs, mark_input, mark_output, mark_side_effect
 from funcdesc.desc import Value, SideEffect
 from funcdesc.parse import parse_func
-from funcdesc.guard import make_guard, Guard, ValueCheckError
+from funcdesc.guard import make_guard, Guard, CheckError
 
 
 def test_mark_Val():
@@ -91,7 +91,7 @@ def test_guard():
     assert add(5, b=12) == 17
     assert add(5) == 15
 
-    with pytest.raises(ValueCheckError):
+    with pytest.raises(CheckError):
         add(-10, 1)
 
     @make_guard(check_outputs=True)
@@ -101,7 +101,7 @@ def test_guard():
     def add2(a: int, b: int) -> int:
         return a + b + 100
 
-    with pytest.raises(ValueCheckError):
+    with pytest.raises(CheckError):
         add2(1, 11)
 
     def add3(a: int) -> int:
@@ -110,7 +110,7 @@ def test_guard():
     desc_add3 = parse_func(add3)
     desc_add3.inputs[0].range = [0, 10]
     add3_guard = Guard(add3, desc_add3)
-    with pytest.raises(ValueCheckError):
+    with pytest.raises(CheckError):
         add3_guard(11)
 
     @make_guard(check_outputs=True)
@@ -123,16 +123,22 @@ def test_guard():
     def bug_exchange(a: str, b: int) -> T.Tuple[int, str]:
         return a, b
 
-    with pytest.raises(ValueCheckError):
+    with pytest.raises(CheckError):
         bug_exchange("1", 2)
 
     @make_guard(check_outputs=True)
     def bug_exchange2(a: str, b: str) -> T.Tuple[str, str]:
         return a + b
 
-    with pytest.raises(ValueCheckError):
+    with pytest.raises(CheckError):
         bug_exchange2("1", "2")
 
+    @make_guard(check_outputs=True)
+    def bug_exchange3(a: str, b: str) -> T.Tuple[str, str, str]:
+        return (b, a)
+
+    with pytest.raises(CheckError):
+        bug_exchange3("1", "2")
 
 
 def test_serialization():
