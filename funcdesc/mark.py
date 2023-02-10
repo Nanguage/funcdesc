@@ -40,6 +40,9 @@ class FuncMarks():
         self.side_effect_marks: T.List[SideEffect] = []
 
 
+TF1 = T.TypeVar("TF1")
+
+
 def _mark_val_factory(store_key: T.Literal["input", "output"]):
     def add_when_not_default(dict_, key, val, default):
         if val != default:
@@ -52,14 +55,14 @@ def _mark_val_factory(store_key: T.Literal["input", "output"]):
             range_: T.Optional[T.Any] = None,
             default: T.Union[_NotDef, T1] = NotDef,
             name: T.Optional[str] = None,
-            **attrs) -> T.Callable:
+            **attrs) -> T.Callable[[TF1], TF1]:
 
         add_when_not_default(attrs, "type_", type_, None)
         add_when_not_default(attrs, "range_", range_, None)
         add_when_not_default(attrs, "default", default, NotDef)
         add_when_not_default(attrs, "name", name, None)
 
-        def wrap(func: T.Callable) -> T.Callable:
+        def wrap(func: TF1) -> TF1:
             func.__dict__.setdefault(FUNC_MARK_STORE_KEY, FuncMarks())
             marks: FuncMarks = func.__dict__[FUNC_MARK_STORE_KEY]
             if store_key == "input":

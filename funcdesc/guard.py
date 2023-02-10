@@ -9,10 +9,13 @@ class ValueCheckError(Exception):
     pass
 
 
-class Guard():
+TF2 = T.TypeVar("TF2", bound=T.Callable)
+
+
+class Guard(T.Generic[TF2]):
     def __init__(
             self,
-            func: T.Callable,
+            func: TF2,
             desc: T.Optional[Description] = None,
             check_inputs: bool = True,
             check_outputs: bool = True,
@@ -76,14 +79,14 @@ class Guard():
 
 
 def make_guard(
-        func: T.Optional[T.Callable] = None,
+        func: T.Optional[TF2] = None,
         *,
         check_inputs: bool = True,
         check_outputs: bool = True,
         check_side_effect: bool = False,
         check_type: bool = True,
         check_range: bool = True,
-        ) -> Guard:
+        ) -> TF2:
     kwargs = {
         "check_inputs": check_inputs,
         "check_outputs": check_outputs,
@@ -92,5 +95,5 @@ def make_guard(
         "check_range": check_range,
     }
     if func is None:
-        return functools.partial(make_guard, **kwargs)
+        return functools.partial(make_guard, **kwargs)  # type: ignore
     return Guard(func, **kwargs)  # type: ignore
