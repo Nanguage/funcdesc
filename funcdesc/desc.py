@@ -63,13 +63,6 @@ class Value(T.Generic[T1]):
                 raise ValueError(
                     f"Value {val} is not in a valid range({self.range}).")
 
-    def check(self, val):
-        if (self.range_checker is None) and (self.type_checker is None):
-            raise NotImplementedError(
-                f"Not checker registered for type: {type}")
-        self.check_type(val)
-        self.check_range(val)
-
 
 # register basic types
 def _check_number_in_range(v, range):

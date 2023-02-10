@@ -79,11 +79,11 @@ def make_guard(
         func: T.Optional[T.Callable] = None,
         *,
         check_inputs: bool = True,
-        check_outputs: bool = False,
+        check_outputs: bool = True,
         check_side_effect: bool = False,
         check_type: bool = True,
         check_range: bool = True,
-        ) -> T.Callable:
+        ) -> Guard:
     kwargs = {
         "check_inputs": check_inputs,
         "check_outputs": check_outputs,

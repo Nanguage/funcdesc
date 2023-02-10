@@ -84,10 +84,12 @@ def test_guard():
     @mark_input(0, range=[0, 10])
     @mark_input("b", range=[10, 20])
     @mark_output(0, range=[0, 30])
-    def add(a: int, b: int) -> int:
+    def add(a: int, b: int = 10) -> int:
         return a + b
 
     assert add(5, 11) == 16
+    assert add(5, b=12) == 17
+    assert add(5) == 15
 
     with pytest.raises(ValueCheckError):
         add(-10, 1)
@@ -111,13 +113,35 @@ def test_guard():
     with pytest.raises(ValueCheckError):
         add3_guard(11)
 
+    @make_guard(check_outputs=True)
+    def exchange(a: str, b: int) -> T.Tuple[int, str]:
+        return b, a
+
+    assert exchange("1", 2) == (2, "1")
+
+    @make_guard(check_outputs=True)
+    def bug_exchange(a: str, b: int) -> T.Tuple[int, str]:
+        return a, b
+
+    with pytest.raises(ValueCheckError):
+        bug_exchange("1", 2)
+
+    @make_guard(check_outputs=True)
+    def bug_exchange2(a: str, b: str) -> T.Tuple[str, str]:
+        return a + b
+
+    with pytest.raises(ValueCheckError):
+        bug_exchange2("1", "2")
+
 
 
 def test_serialization():
     @mark_input(0, range=[0, 10])
     @mark_input("b", range=[10, 20])
     @mark_output(0, range=[0, 30])
+    @mark_side_effect(SideEffect("Print something"))
     def add(a: int, b: int) -> int:
+        print("a + b")
         return a + b
 
     desc_add = parse_func(add)
