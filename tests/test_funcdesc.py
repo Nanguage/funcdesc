@@ -180,3 +180,12 @@ def test_class_method():
     assert a.mth3(10, 20) == 30
     with pytest.raises(CheckError):
         a.mth3(-1, 10)
+
+
+def test_desc_repr():
+    @mark_side_effect(SideEffect("test"))
+    def f1(a: Val[int, [0, 10]], b: int = 10) -> Outputs[int, int]:
+        pass
+
+    desc = parse_func(f1)
+    print(desc)

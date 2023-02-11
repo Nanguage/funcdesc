@@ -5,7 +5,8 @@ from .utils.json import DescriptionJSONEncoder
 
 
 class _NotDef:
-    pass
+    def __str__(self):
+        return "NotDef"
 
 
 NotDef = _NotDef()
@@ -69,6 +70,12 @@ class Value(T.Generic[T1]):
                 raise ValueError(
                     f"Value {val} is not in a valid range({self.range}).")
 
+    def __repr__(self):
+        return (
+            f"<Value type={self.type} range={self.range} "
+            f"default={self.default}>"
+        )
+
 
 # register basic types
 def _check_number_in_range(v, range):
@@ -93,6 +100,9 @@ class SideEffect():
 
     def check(self, inputs: dict, outputs: dict) -> bool:
         return True
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} description={self.description}>"
 
 
 class Description():
@@ -132,3 +142,12 @@ class Description():
     def to_json(self) -> str:
         json_str = DescriptionJSONEncoder().encode(self)
         return json_str
+
+    def __repr__(self) -> str:
+        return (
+            "<Description\n"
+            f"\tinputs={self.inputs}\n"
+            f"\toutputs={self.outputs}\n"
+            f"\tside_effects={self.side_effects}\n"
+            ">"
+        )

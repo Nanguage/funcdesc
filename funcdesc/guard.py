@@ -4,7 +4,6 @@ import types
 
 from .desc import Value, Description
 from .parse import parse_func
-from .utils.misc import AllowWrapInstanceMethod
 
 
 class CheckError(Exception):
@@ -18,7 +17,7 @@ class SideEffectError(Exception):
 TF2 = T.TypeVar("TF2", bound=T.Callable)
 
 
-class Guard(AllowWrapInstanceMethod, T.Generic[TF2]):
+class Guard(T.Generic[TF2]):
     def __init__(
             self,
             func: TF2,
