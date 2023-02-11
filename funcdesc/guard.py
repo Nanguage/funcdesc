@@ -1,8 +1,10 @@
 import typing as T
 import functools
+import types
 
 from .desc import Value, Description
 from .parse import parse_func
+from .utils.misc import AllowWrapInstanceMethod
 
 
 class CheckError(Exception):
@@ -16,7 +18,7 @@ class SideEffectError(Exception):
 TF2 = T.TypeVar("TF2", bound=T.Callable)
 
 
-class Guard(T.Generic[TF2]):
+class Guard(AllowWrapInstanceMethod, T.Generic[TF2]):
     def __init__(
             self,
             func: TF2,
@@ -120,6 +122,16 @@ class Guard(T.Generic[TF2]):
                 errors.append(err)
         if len(errors) > 0:
             raise CheckError(errors)
+
+    def __get__(self, obj, objtype):
+        """Allow use on instance method."""
+        if not hasattr(self, "_bounded"):  # bound only once
+            target_func = self.func
+            bound_mth = types.MethodType(target_func, obj)
+            self.func = bound_mth
+            self.desc.inputs.pop(0)
+            self._bounded = True
+        return self
 
 
 def make_guard(

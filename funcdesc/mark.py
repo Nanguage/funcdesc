@@ -51,14 +51,14 @@ def _mark_val_factory(store_key: T.Literal["input", "output"]):
     def mark_val(
             pos_or_name: T.Union[int, str],
             *,
-            type_: T.Optional[T.Type[T1]] = None,
-            range_: T.Optional[T.Any] = None,
+            type: T.Optional[T.Type[T1]] = None,
+            range: T.Optional[T.Any] = None,
             default: T.Union[_NotDef, T1] = NotDef,
             name: T.Optional[str] = None,
             **attrs) -> T.Callable[[TF1], TF1]:
 
-        add_when_not_default(attrs, "type_", type_, None)
-        add_when_not_default(attrs, "range_", range_, None)
+        add_when_not_default(attrs, "type", type, None)
+        add_when_not_default(attrs, "range", range, None)
         add_when_not_default(attrs, "default", default, NotDef)
         add_when_not_default(attrs, "name", name, None)
 

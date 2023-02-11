@@ -1,3 +1,4 @@
+import types
 import typing as T
 import inspect
 
@@ -10,6 +11,7 @@ GenericAlias = T._GenericAlias  # type: ignore
 
 def parse_func_inputs(
         sig: inspect.Signature,
+        is_method: bool,
         marks: T.Dict[T.Union[int, str], dict],
         ) -> T.List[Value]:
     inputs = []
@@ -29,8 +31,9 @@ def parse_func_inputs(
             val.default = param.default
 
         # update by marks
-        if idx in marks:
-            val.__dict__.update(marks[idx])
+        mark_idx = idx + 1 if is_method else idx
+        if mark_idx in marks:
+            val.__dict__.update(marks[mark_idx])
         elif name in marks:
             val.__dict__.update(marks[name])
 
@@ -73,10 +76,11 @@ def parse_func_outputs(
 def parse_func(func: T.Callable) -> Description:
     desc = Description()
     sig = inspect.signature(func)
+    is_method = isinstance(func, types.MethodType)
     func_marks: T.Optional[FuncMarks] = func.__dict__.get(FUNC_MARK_STORE_KEY)
     if func_marks is None:
         func_marks = FuncMarks()
-    inputs = parse_func_inputs(sig, func_marks.input_marks)
+    inputs = parse_func_inputs(sig, is_method, func_marks.input_marks)
     desc.inputs = inputs
     outputs = parse_func_outputs(sig, func_marks.output_marks)
     desc.outputs = outputs

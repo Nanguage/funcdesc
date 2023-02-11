@@ -152,3 +152,31 @@ def test_serialization():
 
     desc_add = parse_func(add)
     desc_add.to_json()
+
+
+def test_class_method():
+    class A():
+
+        @mark_input(1, range=[0, 10])
+        def mth1(self, a: int, b: int) -> int:
+            return a + b
+
+        @mark_input('a', range=[0, 10])
+        def mth2(self, a: int, b: int) -> int:
+           return a + b
+
+        @make_guard(check_inputs=True)
+        @mark_input('a', range=[0, 10])
+        def mth3(self, a: int, b: int) -> int:
+           return a + b
+
+    desc_mth1 = parse_func(A.mth1)
+    assert desc_mth1.inputs[1].range == [0, 10]
+    a = A()
+    desc_a_mth2 = parse_func(a.mth2)
+    assert desc_a_mth2.inputs[0].range == [0, 10]
+    desc_a_mth1 = parse_func(a.mth1)
+    assert desc_a_mth1.inputs[0].range == [0, 10]
+    assert a.mth3(10, 20) == 30
+    with pytest.raises(CheckError):
+        a.mth3(-1, 10)
