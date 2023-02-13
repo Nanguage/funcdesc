@@ -51,8 +51,9 @@ def parse_func_outputs(
     def to_val(o):
         return o if isinstance(o, Value) else Value(o)
 
+    val: Value
     if ret is inspect._empty:
-        val: Value = Value(type(None))
+        val = Value(type(None))
         outputs.append(val)
     elif isinstance(ret, Value):
         outputs.append(ret)
@@ -62,7 +63,7 @@ def parse_func_outputs(
             (ret._name == "Tuple"):
         outputs.extend([to_val(o) for o in ret.__args__])
     else:
-        val: Value = Value(ret)
+        val = Value(ret)
         outputs.append(val)
 
     for idx, val in enumerate(outputs):
