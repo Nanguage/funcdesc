@@ -5,6 +5,7 @@ from funcdesc.mark import Val, Outputs, mark_input, mark_output, mark_side_effec
 from funcdesc.desc import Value, SideEffect
 from funcdesc.parse import parse_func
 from funcdesc.guard import make_guard, Guard, CheckError
+from funcdesc.utils.json import DescriptionJSONEncoder
 
 
 def test_mark_Val():
@@ -26,6 +27,15 @@ def test_mark_outputs():
 
 
 def test_parse_function():
+    def func0():
+        pass
+
+    desc_func0 = parse_func(func0)
+    assert len(desc_func0.inputs) == 0
+    assert len(desc_func0.outputs) == 1
+    assert desc_func0.outputs[0].type is type(None)
+    assert len(desc_func0.side_effects) == 0
+
     def func1(a: int) -> int:
         return a + 1
 
@@ -59,6 +69,13 @@ def test_parse_function():
 
     desc_func5 = parse_func(func5)
     assert len(desc_func5.outputs) == 2
+
+    @mark_output("ret", range=[0, 10])
+    def func6() -> Val(int, name="ret"):
+        return 10
+
+    desc_func6 = parse_func(func6)
+    assert desc_func6.outputs[0].name == "ret"
 
 
 def test_mark():
@@ -140,6 +157,20 @@ def test_guard():
     with pytest.raises(CheckError):
         bug_exchange3("1", "2")
 
+    @make_guard(check_side_effect=True)
+    @mark_side_effect(SideEffect("test"))
+    def func1():
+        pass
+
+    func1()
+
+    @make_guard
+    def func2(a):
+        pass
+
+    with pytest.raises(TypeError):
+        func2()
+
 
 def test_serialization():
     @mark_input(0, range=[0, 10])
@@ -152,6 +183,10 @@ def test_serialization():
 
     desc_add = parse_func(add)
     desc_add.to_json()
+
+    e = DescriptionJSONEncoder()
+    with pytest.raises(TypeError):
+        e.default(1)
 
 
 def test_class_method():

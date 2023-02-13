@@ -4,9 +4,15 @@ import os
 
 from funcdesc.guard import make_guard, CheckError
 from funcdesc.mark import mark_input, mark_output, mark_side_effect
-from funcdesc.types.value import OneOf, SubSet, InputPath, OutputPath
+from funcdesc.types.value import OneOf, SubSet, InputPath, OutputPath, ValueType
 from funcdesc.types.side_effects import WriteFile
 from funcdesc.mark import Val
+
+
+def test_value_type():
+    v = ValueType()
+    v.check_range(None, None)
+    v.check_type(None, None)
 
 
 def test_oneof():
@@ -62,7 +68,7 @@ def test_write_file_effect():
     test_name = "testtest"
 
     @make_guard(check_side_effect=True)
-    @mark_side_effect(WriteFile("{inputs[0]}.txt"))
+    @mark_side_effect(WriteFile("{inputs[name]}.txt"))
     def func1(name):
         with open(name+".txt", 'w') as f:
             f.write("aaa")
@@ -88,6 +94,7 @@ def test_write_file_effect():
 
     func3(test_name)
     os.remove(test_name+".txt")
+    print(func3.desc)
 
     @make_guard(check_side_effect=True, check_outputs=False)
     @mark_side_effect(WriteFile("{inputs[0]}.txt"))
@@ -102,3 +109,16 @@ def test_write_file_effect():
         pass
 
     func5(test_name)
+
+    with open(test_name+".txt", 'w') as f:
+        f.write("1")
+
+    @make_guard(check_side_effect=True)
+    @mark_side_effect(WriteFile("{inputs[name]}.txt"))
+    def func6(name):
+        with open(name+".txt", 'w') as f:
+            f.write("aaa")
+
+    with pytest.raises(CheckError):
+        func6(test_name)
+    os.remove(test_name+".txt")

@@ -51,7 +51,10 @@ def parse_func_outputs(
     def to_val(o):
         return o if isinstance(o, Value) else Value(o)
 
-    if isinstance(ret, Value):
+    if ret is inspect._empty:
+        val: Value = Value(type(None))
+        outputs.append(val)
+    elif isinstance(ret, Value):
         outputs.append(ret)
     elif isinstance(ret, list):
         outputs.extend([to_val(o) for o in ret])

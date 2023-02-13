@@ -98,7 +98,10 @@ class SideEffect():
     def description(self) -> str:
         return self._description
 
-    def check(self, inputs: dict, outputs: dict) -> bool:
+    def check_before_run(self, inputs: dict) -> bool:
+        return True
+
+    def check_after_run(self, inputs: dict, outputs: dict) -> bool:
         return True
 
     def __repr__(self):
@@ -134,7 +137,7 @@ class Description():
                 if has_default:
                     res[name] = val.default
                 else:
-                    raise ValueError(
+                    raise TypeError(
                         f"{name} is not provided and has no default value."
                     )
         return res

@@ -44,11 +44,15 @@ class Guard(T.Generic[TF2]):
         errors = []
         if self.check_inputs:
             self._check_inputs(pass_in, errors)
+        if self.check_side_effect:
+            self._check_side_effects_before_run(
+                pass_in, errors)
         res = self.func(*args, **kwargs)
         if self.check_outputs:
             self._check_outputs(res, errors)
         if self.check_side_effect:
-            self._check_side_effects(pass_in, res, errors)
+            self._check_side_effects_after_run(
+                pass_in, res, errors)
         return res
 
     def _check_inputs(self, pass_in: dict, errors: list):
@@ -90,15 +94,14 @@ class Guard(T.Generic[TF2]):
         except Exception as e:
             errors.append(e)
 
-    def _check_side_effects(
-            self, pass_in: dict,
-            res: T.Union[tuple, T.Any], errors: list):
-        if len(self.desc.side_effects) == 0:
-            return
+    def _get_input_dict(self, pass_in: dict) -> dict:
         in_dict: T.Dict[T.Union[int, str], T.Any] = {}
         for i, v in enumerate(self.desc.inputs):
             in_dict[i] = pass_in[v.name]
             in_dict[v.name] = pass_in[v.name]
+        return in_dict
+
+    def _get_output_dict(self, res: T.Union[tuple, T.Any]) -> dict:
         rtn_dict: T.Dict[T.Union[int, str], T.Any]
         if self.check_outputs:
             if isinstance(res, tuple):
@@ -113,10 +116,35 @@ class Guard(T.Generic[TF2]):
                 }
         else:
             rtn_dict = {}
+        return rtn_dict
+
+    def _check_side_effects_before_run(
+            self, pass_in: dict, errors: list):
+        if len(self.desc.side_effects) == 0:
+            return
+        in_dict = self._get_input_dict(pass_in)
         for e in self.desc.side_effects:
-            if not e.check(in_dict, rtn_dict):
+            if not e.check_before_run(in_dict):
                 err = SideEffectError(
-                    f"Error occured when check side effect: {self}"
+                    "Error occured when check "
+                    f"side effect(before run): {self.func}"
+                )
+                errors.append(err)
+        if len(errors) > 0:
+            raise CheckError(errors)
+
+    def _check_side_effects_after_run(
+            self, pass_in: dict,
+            res: T.Union[tuple, T.Any], errors: list):
+        if len(self.desc.side_effects) == 0:
+            return
+        in_dict = self._get_input_dict(pass_in)
+        rtn_dict = self._get_output_dict(res)
+        for e in self.desc.side_effects:
+            if not e.check_after_run(in_dict, rtn_dict):
+                err = SideEffectError(
+                    "Error occured when check "
+                    f"side effect(after run): {self.func}"
                 )
                 errors.append(err)
         if len(errors) > 0:

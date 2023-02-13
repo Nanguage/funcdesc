@@ -96,6 +96,39 @@ def add(a: Val[int, [0, 10]], b: Val[int, [0, 10]]) -> Val[int, [0, 20]]:
     return a + b
 ```
 
+### Create function guard
+
+The `make_guard` decorator can convert a marked function into a `Guard` object.
+You can call the `Guard` just like the original function, and it will check the inputs, outputs,
+and side effects of the function based on the marked information.
+For example:
+
+``` Python
+from funcdesc import mark_input, mark_output, make_guard
+
+@make_guard
+@mark_input('a', range=[0, 10])
+@mark_input('b', range=[0, 10])
+@mark_output(0, name="sum", range=[0, 20])
+def add(a: int, b: int) -> int:
+    return a + b
+
+print(add(5, 5))  # will print "10"
+print(add(20, 20))  # will raise an CheckError
+```
+
+```bash
+$ python tmp/test.py
+10
+Traceback (most recent call last):
+  File ".\tmp\test2.py", line 11, in <module>
+    print(add(20, 20))  # will raise an CheckError
+  File "C:\Users\Nangu\Desktop\funcdesc\funcdesc\guard.py", line 46, in __call__
+    self._check_inputs(pass_in, errors)
+  File "C:\Users\Nangu\Desktop\funcdesc\funcdesc\guard.py", line 58, in _check_inputs
+    raise CheckError(errors)
+funcdesc.guard.CheckError: [ValueError('Value 20 is not in a valid range([0, 10]).'), ValueError('Value 20 is not in a valid range([0, 10]).')]
+```
 
 ## Related projects
 
