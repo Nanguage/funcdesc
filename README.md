@@ -130,6 +130,55 @@ Traceback (most recent call last):
 funcdesc.guard.CheckError: [ValueError('Value 20 is not in a valid range([0, 10]).'), ValueError('Value 20 is not in a valid range([0, 10]).')]
 ```
 
+
+### Builtin types
+
+`funcdesc` provides some built-in types to facilitate the use of the `guard`.
+
+#### Builtin Value types
+
+`OneOf` and `SubSet`.
+
+```Python
+from funcdesc import mark_input, make_guard
+from funcdesc.types import SubSet, OneOf
+
+
+member_list = ["Tom", "Jerry", "Jack"]
+food_list = ["apple", "dumpling", "noodles", "banana"]
+
+
+@make_guard
+@mark_input(0, type=OneOf, range=member_list)
+@mark_input(1, type=SubSet, range=food_list)
+def eat(person, foods):
+    print(f"{person} eats {' '.join(foods)}")
+
+
+eat("Tom", ["apple", "dumpling"])
+eat("Jack", ["banana", "noodles"])
+eat("Jared", ["apple"])  # "Jared" not in member_list, will raise exception
+eat("Tom", ["fish"])  # "fish" not in foods_list, will raise exception
+```
+
+`InputPath` and `OutputPath`
+
+```Python
+from funcdesc.types import InputPath, OutputPath
+from funcdesc import make_guard
+
+
+@make_guard
+def copy_file(in_path: InputPath, out_path: OutputPath):
+    with open(in_path) as fi, open(out_path, 'w') as fo:
+        fo.write(fi.read())
+
+
+copy_file("file_exist", "another_file")
+copy_file("file_not_exist", "another_file")  # will raise exception
+```
+
+
 ## Related projects
 
 + [oneFace](https://github.com/Nanguage/oneFace): Generating interfaces(CLI, Qt GUI, Dash web app) from a Python function or a command program.
