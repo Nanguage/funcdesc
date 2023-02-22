@@ -2,6 +2,7 @@ import typing as T
 from copy import copy
 
 from .utils.json import DescriptionJSONEncoder
+from .utils.misc import CreateByGetItem
 
 
 class _NotDef:
@@ -19,7 +20,7 @@ TypeChecker = T.Callable[[T.Any, type], bool]
 RangeChecker = T.Callable[[T.Any, T.Any], bool]
 
 
-class Value(T.Generic[T1]):
+class Value(metaclass=CreateByGetItem):
     type_to_range_checker: T.Dict[type, TypeChecker] = {}
     type_to_type_checker: T.Dict[type, RangeChecker] = {}
 
@@ -29,11 +30,13 @@ class Value(T.Generic[T1]):
             range_: T.Optional[T.Any] = None,
             default: T.Union[_NotDef, T1] = NotDef,
             name: str = "?",
+            **kwargs,
             ):
         self.name = name
         self.type = type_
         self.range = range_
         self.default = default
+        self.kwargs = kwargs
 
     @property
     def type_checker(self):

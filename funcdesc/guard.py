@@ -33,35 +33,35 @@ class Guard(T.Generic[TF2]):
         if desc is None:
             desc = parse_func(func)
         self.desc = desc
-        self.check_type = check_type
-        self.check_range = check_range
-        self.check_side_effect = check_side_effect
-        self.check_inputs = check_inputs
-        self.check_outputs = check_outputs
+        self.is_check_type = check_type
+        self.is_check_range = check_range
+        self.is_check_side_effect = check_side_effect
+        self.is_check_inputs = check_inputs
+        self.is_check_outputs = check_outputs
 
     def __call__(self, *args, **kwargs):
         pass_in = self.desc.parse_pass_in(args, kwargs)
         errors = []
-        if self.check_inputs:
-            self._check_inputs(pass_in, errors)
-        if self.check_side_effect:
-            self._check_side_effects_before_run(
+        if self.is_check_inputs:
+            self.check_inputs(pass_in, errors)
+        if self.is_check_side_effect:
+            self.check_side_effects_before_run(
                 pass_in, errors)
         res = self.func(*args, **kwargs)
-        if self.check_outputs:
-            self._check_outputs(res, errors)
-        if self.check_side_effect:
-            self._check_side_effects_after_run(
+        if self.is_check_outputs:
+            self.check_outputs(res, errors)
+        if self.is_check_side_effect:
+            self.check_side_effects_after_run(
                 pass_in, res, errors)
         return res
 
-    def _check_inputs(self, pass_in: dict, errors: list):
+    def check_inputs(self, pass_in: dict, errors: list):
         for val in self.desc.inputs:
-            self._check_value(val, pass_in[val.name], errors)
+            self.check_value(val, pass_in[val.name], errors)
         if len(errors) > 0:
             raise CheckError(errors)
 
-    def _check_outputs(self, res: T.Union[T.Any, T.Tuple], errors: list):
+    def check_outputs(self, res: T.Union[T.Any, T.Tuple], errors: list):
         if isinstance(res, tuple):
             if len(res) != len(self.desc.outputs):
                 raise CheckError(
@@ -69,7 +69,7 @@ class Guard(T.Generic[TF2]):
                     f" description outputs num({len(self.desc.outputs)})"
                 )
             for idx, val in enumerate(self.desc.outputs):
-                self._check_value(val, res[idx], errors)
+                self.check_value(val, res[idx], errors)
         else:
             if len(self.desc.outputs) != 1:
                 raise CheckError(
@@ -77,33 +77,33 @@ class Guard(T.Generic[TF2]):
                     f" description outputs num({len(self.desc.outputs)})"
                 )
             val = self.desc.outputs[0]
-            self._check_value(val, res, errors)
+            self.check_value(val, res, errors)
         if len(errors) > 0:
             raise CheckError(errors)
 
-    def _check_value(
+    def check_value(
             self,
             arg: Value,
             val: T.Any,
             errors: T.List[Exception]):
         try:
-            if self.check_type:
+            if self.is_check_type:
                 arg.check_type(val)
-            if self.check_range:
+            if self.is_check_range:
                 arg.check_range(val)
         except Exception as e:
             errors.append(e)
 
-    def _get_input_dict(self, pass_in: dict) -> dict:
+    def get_input_dict(self, pass_in: dict) -> dict:
         in_dict: T.Dict[T.Union[int, str], T.Any] = {}
         for i, v in enumerate(self.desc.inputs):
             in_dict[i] = pass_in[v.name]
             in_dict[v.name] = pass_in[v.name]
         return in_dict
 
-    def _get_output_dict(self, res: T.Union[tuple, T.Any]) -> dict:
+    def get_output_dict(self, res: T.Union[tuple, T.Any]) -> dict:
         rtn_dict: T.Dict[T.Union[int, str], T.Any]
-        if self.check_outputs:
+        if self.is_check_outputs:
             if isinstance(res, tuple):
                 rtn_dict = {}
                 for i, v in enumerate(self.desc.outputs):
@@ -118,11 +118,11 @@ class Guard(T.Generic[TF2]):
             rtn_dict = {}
         return rtn_dict
 
-    def _check_side_effects_before_run(
+    def check_side_effects_before_run(
             self, pass_in: dict, errors: list):
         if len(self.desc.side_effects) == 0:
             return
-        in_dict = self._get_input_dict(pass_in)
+        in_dict = self.get_input_dict(pass_in)
         for e in self.desc.side_effects:
             if not e.check_before_run(in_dict):
                 err = SideEffectError(
@@ -133,13 +133,13 @@ class Guard(T.Generic[TF2]):
         if len(errors) > 0:
             raise CheckError(errors)
 
-    def _check_side_effects_after_run(
+    def check_side_effects_after_run(
             self, pass_in: dict,
             res: T.Union[tuple, T.Any], errors: list):
         if len(self.desc.side_effects) == 0:
             return
-        in_dict = self._get_input_dict(pass_in)
-        rtn_dict = self._get_output_dict(res)
+        in_dict = self.get_input_dict(pass_in)
+        rtn_dict = self.get_output_dict(res)
         for e in self.desc.side_effects:
             if not e.check_after_run(in_dict, rtn_dict):
                 err = SideEffectError(

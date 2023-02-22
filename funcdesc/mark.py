@@ -1,25 +1,10 @@
 import typing as T
 
 from .desc import Value, _NotDef, NotDef, T1, SideEffect
+from .utils.misc import CreateByGetItem
 
 
-class CreateByGetItem(type):
-    def __getitem__(self, args):
-        if isinstance(args, tuple):
-            return self(*args)
-        else:
-            return self(args)
-
-
-class Val(metaclass=CreateByGetItem):
-    def __new__(
-            cls,
-            type_: T.Optional[T.Type[T1]] = None,
-            range_: T.Optional[T.Any] = None,
-            default: T.Union[_NotDef, T1] = NotDef,
-            name: str = "?",
-            ):
-        return Value(type_, range_, default, name)
+Val = Value
 
 
 class Outputs(metaclass=CreateByGetItem):
