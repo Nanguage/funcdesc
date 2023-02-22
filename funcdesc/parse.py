@@ -9,6 +9,22 @@ from .mark import FUNC_MARK_STORE_KEY, FuncMarks
 GenericAlias = T._GenericAlias  # type: ignore
 
 
+def _update_val_by_marks(
+        mark_idx: int, name: str,
+        marks: T.Dict, val: Value
+        ):
+    if mark_idx in marks:
+        store = marks[mark_idx].copy()
+    elif name in marks:
+        store = marks[name].copy()
+    else:
+        store = None
+
+    if store is not None:
+        val.kwargs.update(store.pop("attrs"))
+        val.__dict__.update(store)
+
+
 def parse_func_inputs(
         sig: inspect.Signature,
         is_method: bool,
@@ -32,10 +48,7 @@ def parse_func_inputs(
 
         # update by marks
         mark_idx = idx + 1 if is_method else idx
-        if mark_idx in marks:
-            val.__dict__.update(marks[mark_idx])
-        elif name in marks:
-            val.__dict__.update(marks[name])
+        _update_val_by_marks(mark_idx, name, marks, val)
 
         inputs.append(val)
     return inputs
@@ -66,14 +79,12 @@ def parse_func_outputs(
         val = Value(ret)
         outputs.append(val)
 
+    # update by marks
     for idx, val in enumerate(outputs):
         if val.name == "?":
             val.name = f"output_{idx}"
 
-        if idx in marks:
-            val.__dict__.update(marks[idx])
-        elif val.name in marks:
-            val.__dict__.update(marks[val.name])
+        _update_val_by_marks(idx, val.name, marks, val)
     return outputs
 
 

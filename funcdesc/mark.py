@@ -42,18 +42,20 @@ def _mark_val_factory(store_key: T.Literal["input", "output"]):
             name: T.Optional[str] = None,
             **attrs) -> T.Callable[[TF1], TF1]:
 
-        add_when_not_default(attrs, "type", type, None)
-        add_when_not_default(attrs, "range", range, None)
-        add_when_not_default(attrs, "default", default, NotDef)
-        add_when_not_default(attrs, "name", name, None)
+        store = {}
+        store['attrs'] = attrs
+        add_when_not_default(store, "type", type, None)
+        add_when_not_default(store, "range", range, None)
+        add_when_not_default(store, "default", default, NotDef)
+        add_when_not_default(store, "name", name, None)
 
         def wrap(func: TF1) -> TF1:
             func.__dict__.setdefault(FUNC_MARK_STORE_KEY, FuncMarks())
             marks: FuncMarks = func.__dict__[FUNC_MARK_STORE_KEY]
             if store_key == "input":
-                marks.input_marks[pos_or_name] = attrs
+                marks.input_marks[pos_or_name] = store
             else:
-                marks.output_marks[pos_or_name] = attrs
+                marks.output_marks[pos_or_name] = store
             return func
         return wrap
 
