@@ -160,7 +160,8 @@ class Description():
         )
 
     def compose_signature(self) -> inspect.Signature:
-        """Compose the signature of the function according to the description."""
+        """Compose the signature of the function
+        according to the description."""
         params = []
         for val in self.inputs:
             params.append(
