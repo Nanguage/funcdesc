@@ -130,8 +130,8 @@ def sign_return(
     """Change the return type signature of a function."""
     def wrap(func: T.Callable) -> T.Callable:
         sig = inspect.signature(func)
-        func.__signature__ = sig.replace(
-            return_annotation=type_)  # type: ignore
+        func.__signature__ = sig.replace(   # type: ignore
+            return_annotation=type_)
         return func
     return wrap
 
