@@ -89,12 +89,22 @@ def parse_func_outputs(
 
 
 def parse_func(func: T.Callable) -> Description:
-    desc = Description()
+    """Parse the function and return a Description object."""
     sig = inspect.signature(func)
     is_method = isinstance(func, types.MethodType)
     func_marks: T.Optional[FuncMarks] = func.__dict__.get(FUNC_MARK_STORE_KEY)
+    return parse_signature(sig, is_method, func_marks)
+
+
+def parse_signature(
+        sig: inspect.Signature,
+        is_method: bool = False,
+        func_marks: T.Optional[FuncMarks] = None
+        ) -> Description:
+    """Parse the function signature and return a Description object."""
     if func_marks is None:
         func_marks = FuncMarks()
+    desc = Description()
     inputs = parse_func_inputs(sig, is_method, func_marks.input_marks)
     desc.inputs = inputs
     outputs = parse_func_outputs(sig, func_marks.output_marks)

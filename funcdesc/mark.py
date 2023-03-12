@@ -1,4 +1,5 @@
 import typing as T
+import inspect
 
 from .desc import Value, _NotDef, NotDef, T1, SideEffect
 from .utils.misc import CreateByGetItem
@@ -74,4 +75,71 @@ def mark_side_effect(side_effect: SideEffect):
         marks.side_effect_marks.append(side_effect)
         return func
 
+    return wrap
+
+
+PARAM_TYPE = T.Union[
+    str,
+    T.Tuple[str, T.Type],
+    T.Tuple[str, T.Type, T.Any]
+]
+
+
+def sign_parameters(
+        *params: PARAM_TYPE,
+    ) -> T.Callable[[T.Callable], T.Callable]:
+    """Change the parameters signature of a function."""
+    def wrap(func: T.Callable) -> T.Callable:
+        sig = inspect.signature(func)
+        new_params = []
+        for param in params:
+            if isinstance(param, str):
+                new_params.append(
+                    inspect.Parameter(
+                        param,
+                        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                    )
+                )
+            elif len(param) == 2:
+                name, type_ = param  # type: ignore
+                new_params.append(
+                    inspect.Parameter(
+                        name,
+                        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        annotation=type_,
+                    )
+                )
+            else:
+                name, type_, default = param  # type: ignore
+                new_params.append(
+                    inspect.Parameter(
+                        name,
+                        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                        annotation=type_,
+                        default=default,
+                    )
+                )
+        func.__signature__ = sig.replace(parameters=new_params)  # type: ignore
+        return func
+    return wrap
+
+
+def sign_return(
+        type_: T.Optional[T.Type] = None,
+    ) -> T.Callable[[T.Callable], T.Callable]:
+    """Change the return type signature of a function."""
+    def wrap(func: T.Callable) -> T.Callable:
+        sig = inspect.signature(func)
+        func.__signature__ = sig.replace(return_annotation=type_)  # type: ignore
+        return func
+    return wrap
+
+
+def copy_signature(
+        from_func: T.Callable,
+    ) -> T.Callable[[T.Callable], T.Callable]:
+    """Copy the signature of a function to another function."""
+    def wrap(func: T.Callable) -> T.Callable:
+        func.__signature__ = inspect.signature(from_func)  # type: ignore
+        return func
     return wrap

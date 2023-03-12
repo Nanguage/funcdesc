@@ -179,6 +179,56 @@ copy_file("file_not_exist", "another_file")  # will raise exception
 ```
 
 
+### Change function's signature
+
+funcdesc also provides some utility functions for modifying function signature, in order to annotate functions with variable-length parameter types.
+
+Change the parameters signature:
+
+```Python
+from funcdesc.mark import sign_parameters
+
+@sign_parameters("a", ("b", int), ("c", int, 10))
+def f(*args) -> int:
+    return sum(args)
+
+# The signature of `f` is changed
+sig = inspect.signature(f)
+assert len(sig.parameters) == 3
+assert sig.parameters["a"].annotation is inspect._empty
+assert sig.parameters["b"].annotation is int
+assert sig.parameters["c"].default == 10
+```
+
+Change the return signature:
+
+```Python
+@sign_return(str)
+def f(a: int):
+    return str(a)
+
+# The signature of `f` is changed
+sig = inspect.signature(f)
+assert sig.return_annotation is str
+```
+
+Copy the signature of a function to another function:
+
+```Python
+def f(a: int) -> str:
+    return str(a)
+
+@copy_signature(f)
+def g(b):
+    return str(b)
+
+# The signature of `g` is copied from `f`
+sig = inspect.signature(g)
+assert sig.parameters["a"].annotation is int
+assert sig.return_annotation is str
+```
+
+
 ## Related projects
 
 + [oneFace](https://github.com/Nanguage/oneFace): Generating interfaces(CLI, Qt GUI, Dash web app) from a Python function or a command program.

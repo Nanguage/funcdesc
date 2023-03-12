@@ -1,5 +1,6 @@
 import typing as T
 from copy import copy
+import inspect
 
 from .utils.json import DescriptionJSONEncoder
 from .utils.misc import CreateByGetItem
@@ -157,3 +158,32 @@ class Description():
             f"\tside_effects={self.side_effects}\n"
             ">"
         )
+
+    def compose_signature(self) -> inspect.Signature:
+        """Compose the signature of the function according to the description."""
+        params = []
+        for val in self.inputs:
+            params.append(
+                inspect.Parameter(
+                    val.name,
+                    inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                    default=val.default,
+                    annotation=val.type,
+                )
+            )
+        rtn_type: T.Union[type, tuple]
+        if len(self.outputs) == 0:
+            rtn_type = inspect._empty
+        elif len(self.outputs) == 1:
+            out_tp = self.outputs[0].type
+            if out_tp is None:
+                rtn_type = inspect._empty
+            else:
+                rtn_type = out_tp
+        else:
+            rtn_type = tuple([val.type for val in self.outputs])
+        sig = inspect.Signature(
+            params,
+            return_annotation=rtn_type
+        )
+        return sig
