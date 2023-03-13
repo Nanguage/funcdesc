@@ -186,6 +186,7 @@ funcdesc also provides some utility functions for modifying function signature, 
 Change the parameters signature:
 
 ```Python
+import inspect
 from funcdesc.mark import sign_parameters
 
 @sign_parameters("a", ("b", int), ("c", int, 10))
@@ -203,6 +204,9 @@ assert sig.parameters["c"].default == 10
 Change the return signature:
 
 ```Python
+import inspect
+from funcdesc.mark import sign_return
+
 @sign_return(str)
 def f(a: int):
     return str(a)
@@ -215,6 +219,9 @@ assert sig.return_annotation is str
 Copy the signature of a function to another function:
 
 ```Python
+import inspect
+from funcdesc.mark import copy_signature
+
 def f(a: int) -> str:
     return str(a)
 
@@ -228,6 +235,18 @@ assert sig.parameters["a"].annotation is int
 assert sig.return_annotation is str
 ```
 
+Generate a `Signature` object from `Description` object:
+
+```Python
+from funcdesc import parse_func
+
+def f(a: int) -> str:
+    return str(a)
+
+desc = parse_func(f)
+sig = desc.compose_signature()
+print(sig) # will print: (a: int) -> str
+```
 
 ## Related projects
 
