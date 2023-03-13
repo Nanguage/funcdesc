@@ -23,15 +23,16 @@
 ## Features
 
 * Parse function to get a description object.
-* Mark function's inputs and outputs
-* Mark function's side effects
-* Generate checker(guard) for function
+* Mark function's inputs and outputs.
+* Mark function's side effects.
+* Generate checker(guard) for function.
   + Check inputs and outputs's type.
   + Check inputs and outputs's range.
   + Check side-effect.
-* Serialization & Deserialization of the description
+* Serialization & Deserialization of the description.
   + Convert description object to JSON string.
-  + **TODO** Parse JSON string to get description object
+  + **TODO** Parse JSON string to get description object.
+* Utility functions for edit function's signature.
 
 
 ## Concept
