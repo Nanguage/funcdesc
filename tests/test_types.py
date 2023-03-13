@@ -3,7 +3,7 @@ import pytest
 import os
 
 from funcdesc.guard import make_guard, CheckError
-from funcdesc.mark import mark_input, mark_output, mark_side_effect
+from funcdesc.mark import mark_input, mark_side_effect
 from funcdesc.types.value import OneOf, SubSet, InputPath, OutputPath, ValueType
 from funcdesc.types.side_effects import WriteFile
 from funcdesc.mark import Val
@@ -43,8 +43,7 @@ def test_subset():
 def test_path():
     @make_guard(check_outputs=True)
     @mark_input(0, type=InputPath)
-    @mark_output(0, type=OutputPath)
-    def func1(path, return_path: bool):
+    def func1(path, return_path: bool) -> OutputPath:
         if return_path:
             return path
         else:

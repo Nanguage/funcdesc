@@ -164,25 +164,28 @@ class Description():
         according to the description."""
         params = []
         for val in self.inputs:
+            default: T.Any
+            if val.default is NotDef:
+                default = inspect._empty
+            else:
+                default = val.default
             params.append(
                 inspect.Parameter(
                     val.name,
                     inspect.Parameter.POSITIONAL_OR_KEYWORD,
-                    default=val.default,
+                    default=default,
                     annotation=val.type,
                 )
             )
-        rtn_type: T.Union[type, tuple]
-        if len(self.outputs) == 0:
+        rtn_type: T.Union[None, type, list]
+        if len(self.outputs) == 0:  # pragma: no cover
             rtn_type = inspect._empty
         elif len(self.outputs) == 1:
-            out_tp = self.outputs[0].type
-            if out_tp is None:
+            rtn_type = self.outputs[0].type
+            if rtn_type is type(None):  # noqa: E721
                 rtn_type = inspect._empty
-            else:
-                rtn_type = out_tp
         else:
-            rtn_type = tuple([val.type for val in self.outputs])
+            rtn_type = [val.type for val in self.outputs]
         sig = inspect.Signature(
             params,
             return_annotation=rtn_type
