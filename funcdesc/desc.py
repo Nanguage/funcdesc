@@ -22,6 +22,7 @@ RangeChecker = T.Callable[[T.Any, T.Any], bool]
 
 
 class Value(metaclass=CreateByGetItem):
+    """The description of a value."""
     type_to_range_checker: T.Dict[type, TypeChecker] = {}
     type_to_type_checker: T.Dict[type, RangeChecker] = {}
 
@@ -113,6 +114,7 @@ class SideEffect():
 
 
 class Description():
+    """The description of a function."""
     def __init__(
             self,
             inputs: T.Optional[T.List[Value]] = None,

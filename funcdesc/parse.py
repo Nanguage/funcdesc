@@ -54,6 +54,28 @@ def parse_func_inputs(
     return inputs
 
 
+def marks_to_outputs(marks):
+    outputs = []
+    if len(marks) == 0:
+        val = Value(type(None))
+        outputs.append(val)
+    else:
+        marks_keys = list(marks.keys())
+        if all([isinstance(k, int) for k in marks_keys]):
+            for _ in range(max(marks_keys) + 1):  # type: ignore
+                val = Value(type(None))
+                outputs.append(val)
+        elif (len(marks) == 1) and isinstance(marks_keys[0], str):
+            val = Value(type(None), name=marks_keys[0])
+            outputs.append(val)
+        else:
+            raise ValueError(
+                f"Invalid marks keys: {marks_keys},"
+                " the keys should be all int or single str."
+            )
+    return outputs
+
+
 def parse_func_outputs(
         sig: inspect.Signature,
         marks: T.Dict[T.Union[int, str], dict]
@@ -66,8 +88,7 @@ def parse_func_outputs(
 
     val: Value
     if ret is inspect._empty:
-        val = Value(type(None))
-        outputs.append(val)
+        outputs.extend(marks_to_outputs(marks))
     elif isinstance(ret, Value):
         outputs.append(ret)
     elif isinstance(ret, list):
@@ -83,7 +104,6 @@ def parse_func_outputs(
     for idx, val in enumerate(outputs):
         if val.name == "?":
             val.name = f"output_{idx}"
-
         _update_val_by_marks(idx, val.name, marks, val)
     return outputs
 

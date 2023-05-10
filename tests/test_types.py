@@ -4,7 +4,9 @@ import os
 
 from funcdesc.guard import make_guard, CheckError
 from funcdesc.mark import mark_input, mark_side_effect
-from funcdesc.types.value import OneOf, SubSet, InputPath, OutputPath, ValueType
+from funcdesc.types.value import (
+    OneOf, SubSet, InputPath, OutputPath, ValueType
+)
 from funcdesc.types.side_effects import WriteFile
 from funcdesc.mark import Val
 

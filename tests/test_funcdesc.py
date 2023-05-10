@@ -1,7 +1,9 @@
 import pytest
 
 import typing as T
-from funcdesc.mark import Val, Outputs, mark_input, mark_output, mark_side_effect
+from funcdesc.mark import (
+    Val, Outputs, mark_input, mark_output, mark_side_effect
+)
 from funcdesc.desc import Value, SideEffect
 from funcdesc.parse import parse_func
 from funcdesc.guard import make_guard, Guard, CheckError
@@ -33,7 +35,7 @@ def test_parse_function():
     desc_func0 = parse_func(func0)
     assert len(desc_func0.inputs) == 0
     assert len(desc_func0.outputs) == 1
-    assert desc_func0.outputs[0].type is type(None)
+    assert desc_func0.outputs[0].type is type(None)  # noqa
     assert len(desc_func0.side_effects) == 0
 
     def func1(a: int) -> int:
@@ -71,11 +73,35 @@ def test_parse_function():
     assert len(desc_func5.outputs) == 2
 
     @mark_output("ret", range=[0, 10])
-    def func6() -> Val(int, name="ret"):
+    def func6() -> Val(int, name="ret"):  # noqa
         return 10
 
     desc_func6 = parse_func(func6)
     assert desc_func6.outputs[0].name == "ret"
+
+    @mark_output(0, type=str)
+    @mark_output(1, type=int)
+    def func7():
+        return "1", 1
+
+    desc_func7 = parse_func(func7)
+    assert desc_func7.outputs[0].type is str
+    assert desc_func7.outputs[1].type is int
+
+    @mark_output('out', type=str)
+    def func8():
+        return "1"
+
+    desc_func8 = parse_func(func8)
+    assert desc_func8.outputs[0].type is str
+
+    @mark_output(0, type=str)
+    @mark_output('a', type=int)
+    def func9():
+        return "1", 1
+
+    with pytest.raises(ValueError):
+        parse_func(func9)
 
 
 def test_mark():
@@ -198,12 +224,12 @@ def test_class_method():
 
         @mark_input('a', range=[0, 10])
         def mth2(self, a: int, b: int) -> int:
-           return a + b
+            return a + b
 
         @make_guard(check_inputs=True)
         @mark_input('a', range=[0, 10])
         def mth3(self, a: int, b: int) -> int:
-           return a + b
+            return a + b
 
     desc_mth1 = parse_func(A.mth1)
     assert desc_mth1.inputs[1].range == [0, 10]
