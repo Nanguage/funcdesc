@@ -102,7 +102,7 @@ def parse_func_outputs(
 
     # update by marks
     for idx, val in enumerate(outputs):
-        if val.name == "?":
+        if val.name is None:
             val.name = f"output_{idx}"
         _update_val_by_marks(idx, val.name, marks, val)
     return outputs
@@ -113,7 +113,10 @@ def parse_func(func: T.Callable) -> Description:
     sig = inspect.signature(func)
     is_method = isinstance(func, types.MethodType)
     func_marks: T.Optional[FuncMarks] = func.__dict__.get(FUNC_MARK_STORE_KEY)
-    return parse_signature(sig, is_method, func_marks)
+    desc = parse_signature(sig, is_method, func_marks)
+    desc.name = func.__name__
+    desc.doc = func.__doc__
+    return desc
 
 
 def parse_signature(

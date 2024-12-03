@@ -199,7 +199,7 @@ def test_guard():
 
 
 def test_serialization():
-    @mark_input(0, range=[0, 10])
+    @mark_input(0, range=[0, 10], doc="the first input")
     @mark_input("b", range=[10, 20])
     @mark_output(0, range=[0, 30])
     @mark_side_effect(SideEffect("Print something"))
@@ -218,6 +218,7 @@ def test_serialization():
     # test deserialization
     desc_add = parse_func(add)
     desc_add_json = desc_add.to_json()
+    desc_add.inputs[0].doc = "the first input"
     desc_add2 = DescriptionJSONDecoder().decode(desc_add_json)
     assert desc_add == desc_add2
 

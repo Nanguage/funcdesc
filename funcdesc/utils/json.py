@@ -14,6 +14,8 @@ class DescriptionJSONEncoder(json.JSONEncoder):
                 "inputs": [self.default(v) for v in o.inputs],
                 "outputs": [self.default(v) for v in o.outputs],
                 "side_effects": [self.default(v) for v in o.side_effects],
+                "name": o.name,
+                "doc": o.doc,
             }
         elif isinstance(o, Value):
             if o.type.__module__ == "typing":
@@ -25,6 +27,7 @@ class DescriptionJSONEncoder(json.JSONEncoder):
                 "range": o.range,
                 "default": o.default,
                 "name": o.name,
+                "doc": o.doc,
             }
         elif isinstance(o, _NotDef):
             return "not_defined"
@@ -55,6 +58,7 @@ class DescriptionJSONDecoder(json.JSONDecoder):
             range_=r,
             default=d,
             name=v["name"],
+            doc=v["doc"],
         )
         return value
 
@@ -71,6 +75,8 @@ class DescriptionJSONDecoder(json.JSONDecoder):
         from ..desc import Description
         jdict = super().decode(s)
         desc = Description()
+        desc.name = jdict["name"]
+        desc.doc = jdict["doc"]
         desc.inputs = [self.decode_value(v, env) for v in jdict["inputs"]]
         desc.outputs = [self.decode_value(v, env) for v in jdict["outputs"]]
         desc.side_effects = [

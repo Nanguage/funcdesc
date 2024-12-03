@@ -31,7 +31,8 @@ class Value(metaclass=CreateByGetItem):
             type_: T.Optional[T.Type[T1]] = None,
             range_: T.Optional[T.Any] = None,
             default: T.Union[_NotDef, T1] = NotDef,
-            name: str = "?",
+            name: T.Optional[str] = None,
+            doc: T.Optional[str] = None,
             **kwargs,
             ):
         self.name = name
@@ -39,6 +40,7 @@ class Value(metaclass=CreateByGetItem):
         self.range = range_
         self.default = default
         self.kwargs = kwargs
+        self.doc = doc
 
     @property
     def type_checker(self):
@@ -77,12 +79,14 @@ class Value(metaclass=CreateByGetItem):
 
     def __repr__(self):
         return (
-            f"<Value type={self.type} range={self.range} "
+            f"<Value name={self.name} type={self.type} range={self.range} "
             f"default={self.default}>"
         )
 
     def __eq__(self, other):
         return (
+            self.name == other.name and
+            self.doc == other.doc and
             self.type == other.type and
             self.range == other.range and
             self.default == other.default
@@ -130,10 +134,14 @@ class Description():
             inputs: T.Optional[T.List[Value]] = None,
             outputs: T.Optional[T.List[Value]] = None,
             side_effects: T.Optional[T.List[SideEffect]] = None,
+            name: T.Optional[str] = None,
+            doc: T.Optional[str] = None,
             ):
         self.inputs = [] if inputs is None else inputs
         self.outputs = [] if outputs is None else outputs
         self.side_effects = [] if side_effects is None else side_effects
+        self.name = name
+        self.doc = doc
 
     def parse_pass_in(self, args: tuple, kwargs: dict) -> T.Dict[str, T.Any]:
         """Get the pass in value of the func
@@ -168,6 +176,8 @@ class Description():
             f"\tinputs={self.inputs}\n"
             f"\toutputs={self.outputs}\n"
             f"\tside_effects={self.side_effects}\n"
+            f"\tname={self.name}\n"
+            f"\tdoc={self.doc}\n"
             ">"
         )
 
@@ -175,7 +185,9 @@ class Description():
         return (
             self.inputs == other.inputs and
             self.outputs == other.outputs and
-            self.side_effects == other.side_effects
+            self.side_effects == other.side_effects and
+            self.name == other.name and
+            self.doc == other.doc
         )
 
     def compose_signature(self) -> inspect.Signature:

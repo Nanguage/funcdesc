@@ -41,6 +41,7 @@ def _mark_val_factory(store_key: T.Literal["input", "output"]):
             range: T.Optional[T.Any] = None,
             default: T.Union[_NotDef, T1] = NotDef,
             name: T.Optional[str] = None,
+            doc: T.Optional[str] = None,
             **attrs) -> T.Callable[[TF1], TF1]:
 
         store = {}
@@ -49,6 +50,7 @@ def _mark_val_factory(store_key: T.Literal["input", "output"]):
         add_when_not_default(store, "range", range, None)
         add_when_not_default(store, "default", default, NotDef)
         add_when_not_default(store, "name", name, None)
+        add_when_not_default(store, "doc", doc, None)
 
         def wrap(func: TF1) -> TF1:
             func.__dict__.setdefault(FUNC_MARK_STORE_KEY, FuncMarks())
