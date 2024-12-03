@@ -18,7 +18,9 @@ class DescriptionJSONEncoder(json.JSONEncoder):
                 "doc": o.doc,
             }
         elif isinstance(o, Value):
-            if o.type.__module__ == "typing":
+            if o.type is None:
+                t = None
+            elif o.type.__module__ == "typing":
                 t = str(o.type)
             else:
                 t = o.type.__name__
@@ -67,7 +69,7 @@ class DescriptionJSONDecoder(json.JSONDecoder):
         from ..desc import SideEffect
         return SideEffect(**v)
 
-    def decode(
+    def decode_description(
             self,
             s: str,
             env: T.Optional[T.Dict[str, T.Any]] = None
@@ -83,3 +85,6 @@ class DescriptionJSONDecoder(json.JSONDecoder):
             self.decode_side_effect(v) for v in jdict["side_effects"]
         ]
         return desc
+
+    def decode(self, *args, **kwargs) -> T.Any:
+        return self.decode_description(*args, **kwargs)

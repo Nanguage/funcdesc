@@ -98,7 +98,7 @@ class Guard(T.Generic[TF2]):
         in_dict: T.Dict[T.Union[int, str], T.Any] = {}
         for i, v in enumerate(self.desc.inputs):
             in_dict[i] = pass_in[v.name]
-            in_dict[v.name] = pass_in[v.name]
+            in_dict[v.name or "?"] = pass_in[v.name]
         return in_dict
 
     def get_output_dict(self, res: T.Union[tuple, T.Any]) -> dict:
@@ -108,10 +108,10 @@ class Guard(T.Generic[TF2]):
                 rtn_dict = {}
                 for i, v in enumerate(self.desc.outputs):
                     rtn_dict[i] = res[i]
-                    rtn_dict[v.name] = res[i]
+                    rtn_dict[v.name or "?"] = res[i]
             else:
                 rtn_dict = {
-                    self.desc.outputs[0].name: res,
+                    self.desc.outputs[0].name or "?": res,
                     0: res,
                 }
         else:

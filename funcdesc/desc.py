@@ -152,7 +152,11 @@ class Description():
         res = {}
         for val in self.inputs:
             has_default = val.default is not NotDef
-            name: str = val.name
+            name: str
+            if val.name is None:
+                name = "?"
+            else:
+                name = val.name
             if len(args_) > 0:
                 res[name] = args_.pop(0)
             elif (len(kwargs) > 0) and (name in kwargs):
@@ -202,7 +206,7 @@ class Description():
                 default = val.default
             params.append(
                 inspect.Parameter(
-                    val.name,
+                    val.name or "?",
                     inspect.Parameter.POSITIONAL_OR_KEYWORD,
                     default=default,
                     annotation=val.type,
