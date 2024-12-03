@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "funcdesc"
+dynamic = ["version"]
+authors = [
+    {name = "Weize Xu", email = "vet.xwz@gmail.com"},
+]
+description = "Establish a general function description protocol, which can realize a comprehensive description of the input, output and side effects of an target function through an Python object. Provide a unified abstraction for parameter checking, interface generation and other functions in applications such as oneFace."
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+keywords = ["funcdesc"]
+
+[project.urls]
+Homepage = "https://github.com/Nanguage/funcdesc"
+Repository = "https://github.com/Nanguage/funcdesc"
+
+[project.optional-dependencies]
+dev = [
+    "pip",
+    "setuptools",
+    "wheel",
+    "twine",
+    "ipdb",
+    "pytest",
+    "pytest-cov",
+    "flake8",
+    "mypy",
+]
+
+[tool.setuptools]
+packages = ["funcdesc"]
+
+[tool.setuptools.dynamic]
+version = {attr = "funcdesc.__version__"} 
