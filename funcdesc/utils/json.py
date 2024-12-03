@@ -6,6 +6,9 @@ if T.TYPE_CHECKING:  # pragma: no cover
     from ..desc import Value, SideEffect, Description
 
 
+NoneType = type(None)
+
+
 class DescriptionJSONEncoder(json.JSONEncoder):
     def default(self, o: T.Any) -> T.Any:
         from ..desc import Description, Value, SideEffect, _NotDef
