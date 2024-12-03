@@ -31,7 +31,7 @@
   + Check side-effect.
 * Serialization & Deserialization of the description.
   + Convert description object to JSON string.
-  + **TODO** Parse JSON string to get description object.
+  + Parse JSON string to get description object.
 * Utility functions for edit function's signature.
 
 

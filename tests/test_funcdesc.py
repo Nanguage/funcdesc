@@ -7,7 +7,7 @@ from funcdesc.mark import (
 from funcdesc.desc import Value, SideEffect
 from funcdesc.parse import parse_func
 from funcdesc.guard import make_guard, Guard, CheckError
-from funcdesc.utils.json import DescriptionJSONEncoder
+from funcdesc.utils.json import DescriptionJSONEncoder, DescriptionJSONDecoder
 
 
 def test_mark_Val():
@@ -203,7 +203,8 @@ def test_serialization():
     @mark_input("b", range=[10, 20])
     @mark_output(0, range=[0, 30])
     @mark_side_effect(SideEffect("Print something"))
-    def add(a: int, b: int) -> int:
+    def add(a: int, b: int = 2, words: T.Optional[str] = None) -> int:
+        print(words)
         print("a + b")
         return a + b
 
@@ -213,6 +214,12 @@ def test_serialization():
     e = DescriptionJSONEncoder()
     with pytest.raises(TypeError):
         e.default(1)
+
+    # test deserialization
+    desc_add = parse_func(add)
+    desc_add_json = desc_add.to_json()
+    desc_add2 = DescriptionJSONDecoder().decode(desc_add_json)
+    assert desc_add == desc_add2
 
 
 def test_class_method():

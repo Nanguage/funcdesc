@@ -81,6 +81,13 @@ class Value(metaclass=CreateByGetItem):
             f"default={self.default}>"
         )
 
+    def __eq__(self, other):
+        return (
+            self.type == other.type and
+            self.range == other.range and
+            self.default == other.default
+        )
+
 
 # register basic types
 def _check_number_in_range(v, range):
@@ -111,6 +118,9 @@ class SideEffect():
 
     def __repr__(self):
         return f"<{self.__class__.__name__} description={self.description}>"
+
+    def __eq__(self, other):
+        return self.description == other.description
 
 
 class Description():
@@ -159,6 +169,13 @@ class Description():
             f"\toutputs={self.outputs}\n"
             f"\tside_effects={self.side_effects}\n"
             ">"
+        )
+
+    def __eq__(self, other):
+        return (
+            self.inputs == other.inputs and
+            self.outputs == other.outputs and
+            self.side_effects == other.side_effects
         )
 
     def compose_signature(self) -> inspect.Signature:

@@ -1,5 +1,9 @@
 import typing as T
+import typing
 import json
+
+if T.TYPE_CHECKING:  # pragma: no cover
+    from ..desc import Value, SideEffect, Description
 
 
 class DescriptionJSONEncoder(json.JSONEncoder):
@@ -12,17 +16,64 @@ class DescriptionJSONEncoder(json.JSONEncoder):
                 "side_effects": [self.default(v) for v in o.side_effects],
             }
         elif isinstance(o, Value):
+            if o.type.__module__ == "typing":
+                t = str(o.type)
+            else:
+                t = o.type.__name__
             return {
-                "type": o.type.__name__ if o.type is not None else o.type,
+                "type": t,
                 "range": o.range,
                 "default": o.default,
+                "name": o.name,
             }
         elif isinstance(o, _NotDef):
             return "not_defined"
         elif isinstance(o, SideEffect):
             return {
-                "type": o.__class__.__name__,
                 "description": o.description,
             }
         else:
             return super().default(o)
+
+
+class DescriptionJSONDecoder(json.JSONDecoder):
+    def decode_value(
+            self,
+            v: T.Dict[str, T.Any],
+            env: T.Optional[T.Dict[str, T.Any]] = None
+            ) -> "Value":
+        from ..desc import Value, NotDef
+        t = eval(v["type"], env) if isinstance(v["type"], str) else v["type"]
+        r = eval(v["range"], env) \
+            if isinstance(v["range"], str) else v["range"]
+        if v["default"] == "not_defined":
+            d = NotDef
+        else:
+            d = v["default"]
+        value = Value(
+            type_=t,
+            range_=r,
+            default=d,
+            name=v["name"],
+        )
+        return value
+
+    def decode_side_effect(
+            self, v: T.Dict[str, T.Any]) -> "SideEffect":
+        from ..desc import SideEffect
+        return SideEffect(**v)
+
+    def decode(
+            self,
+            s: str,
+            env: T.Optional[T.Dict[str, T.Any]] = None
+            ) -> "Description":
+        from ..desc import Description
+        jdict = super().decode(s)
+        desc = Description()
+        desc.inputs = [self.decode_value(v, env) for v in jdict["inputs"]]
+        desc.outputs = [self.decode_value(v, env) for v in jdict["outputs"]]
+        desc.side_effects = [
+            self.decode_side_effect(v) for v in jdict["side_effects"]
+        ]
+        return desc
