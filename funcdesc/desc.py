@@ -2,7 +2,7 @@ import typing as T
 from copy import copy
 import inspect
 
-from .utils.json import DescriptionJSONEncoder
+from .utils.json import DescriptionJSONEncoder, DescriptionJSONDecoder
 from .utils.misc import CreateByGetItem
 
 
@@ -152,11 +152,7 @@ class Description():
         res = {}
         for val in self.inputs:
             has_default = val.default is not NotDef
-            name: str
-            if val.name is None:
-                name = "?"
-            else:
-                name = val.name
+            name = "?" if val.name is None else val.name
             if len(args_) > 0:
                 res[name] = args_.pop(0)
             elif (len(kwargs) > 0) and (name in kwargs):
@@ -173,6 +169,10 @@ class Description():
     def to_json(self) -> str:
         json_str = DescriptionJSONEncoder().encode(self)
         return json_str
+
+    @classmethod
+    def from_json(cls, json_str: str) -> "Description":
+        return DescriptionJSONDecoder().decode(json_str)
 
     def __repr__(self) -> str:
         return (
