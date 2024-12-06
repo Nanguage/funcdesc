@@ -42,7 +42,7 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["funcdesc"]
+packages = {find = {}}
 
 [tool.setuptools.dynamic]
 version = {attr = "funcdesc.__version__"} 
