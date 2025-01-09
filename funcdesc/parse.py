@@ -111,13 +111,13 @@ def update_using_docstring(desc: Description, docstring: str):
         if val.doc is None:
             val.doc = doc.params[i].description
         if val.type is None:
-            val.type = eval(doc.params[i].type_name)
+            val.type = eval(doc.params[i].type_name or "None")
     if doc.returns is not None:
         for i, val in enumerate(desc.outputs):
             if val.doc is None:
                 val.doc = doc.returns.description
             if val.type is type(None):
-                val.type = eval(doc.returns.type_name)
+                val.type = eval(doc.returns.type_name or "None")
 
 
 def parse_func(
