@@ -6,7 +6,6 @@ from .desc import Description, Value
 from .mark import FUNC_MARK_STORE_KEY, FuncMarks
 
 
-
 def _update_val_by_marks(
         mark_idx: int, name: str,
         marks: T.Dict, val: Value
@@ -91,8 +90,7 @@ def parse_func_outputs(
         outputs.append(ret)
     elif isinstance(ret, list):
         outputs.extend([to_val(o) for o in ret])
-    elif isinstance(ret, (T.GenericAlias, T._GenericAlias)) and \
-            (ret.__name__ in ("Tuple", "tuple")):
+    elif T.get_origin(ret) is tuple:
         outputs.extend([to_val(o) for o in ret.__args__])
     else:
         val = Value(ret)
@@ -132,7 +130,7 @@ def parse_func(
     func_marks: T.Optional[FuncMarks] = func.__dict__.get(FUNC_MARK_STORE_KEY)
     desc = parse_signature(sig, is_method, func_marks)
     if update_by_docstring:
-        update_using_docstring(desc, func.__doc__)
+        update_using_docstring(desc, func.__doc__ or "")
     desc.name = func.__name__
     desc.doc = func.__doc__
     return desc
