@@ -6,8 +6,6 @@ from .desc import Description, Value
 from .mark import FUNC_MARK_STORE_KEY, FuncMarks
 
 
-GenericAlias = T._GenericAlias  # type: ignore
-
 
 def _update_val_by_marks(
         mark_idx: int, name: str,
@@ -93,8 +91,8 @@ def parse_func_outputs(
         outputs.append(ret)
     elif isinstance(ret, list):
         outputs.extend([to_val(o) for o in ret])
-    elif isinstance(ret, GenericAlias) and \
-            (ret._name == "Tuple"):
+    elif isinstance(ret, (T.GenericAlias, T._GenericAlias)) and \
+            (ret.__name__ in ("Tuple", "tuple")):
         outputs.extend([to_val(o) for o in ret.__args__])
     else:
         val = Value(ret)
@@ -108,12 +106,33 @@ def parse_func_outputs(
     return outputs
 
 
-def parse_func(func: T.Callable) -> Description:
+def update_using_docstring(desc: Description, docstring: str):
+    import docstring_parser
+    doc = docstring_parser.parse(docstring)
+    for i, val in enumerate(desc.inputs):
+        if val.doc is None:
+            val.doc = doc.params[i].description
+        if val.type is None:
+            val.type = eval(doc.params[i].type_name)
+    if doc.returns is not None:
+        for i, val in enumerate(desc.outputs):
+            if val.doc is None:
+                val.doc = doc.returns.description
+            if val.type is type(None):
+                val.type = eval(doc.returns.type_name)
+
+
+def parse_func(
+        func: T.Callable,
+        update_by_docstring: bool = False
+        ) -> Description:
     """Parse the function and return a Description object."""
     sig = inspect.signature(func)
     is_method = isinstance(func, types.MethodType)
     func_marks: T.Optional[FuncMarks] = func.__dict__.get(FUNC_MARK_STORE_KEY)
     desc = parse_signature(sig, is_method, func_marks)
+    if update_by_docstring:
+        update_using_docstring(desc, func.__doc__)
     desc.name = func.__name__
     desc.doc = func.__doc__
     return desc

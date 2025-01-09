@@ -10,7 +10,7 @@ authors = [
 ]
 description = "Establish a general function description protocol, which can realize a comprehensive description of the input, output and side effects of an target function through an Python object. Provide a unified abstraction for parameter checking, interface generation and other functions in applications such as oneFace."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -30,6 +30,22 @@ Repository = "https://github.com/Nanguage/funcdesc"
 
 [project.optional-dependencies]
 dev = [
+    "pytest",
+    "pytest-cov",
+    "flake8",
+    "mypy",
+    "pydantic>=2.10.4",
+    "docstring_parser>=0.16",
+]
+
+[tool.setuptools]
+packages = {find = {}}
+
+[tool.setuptools.dynamic]
+version = {attr = "funcdesc.__version__"} 
+
+[dependency-groups]
+dev = [
     "pip",
     "setuptools",
     "wheel",
@@ -39,10 +55,6 @@ dev = [
     "pytest-cov",
     "flake8",
     "mypy",
+    "pydantic>=2.10.4",
+    "docstring_parser>=0.16",
 ]
-
-[tool.setuptools]
-packages = {find = {}}
-
-[tool.setuptools.dynamic]
-version = {attr = "funcdesc.__version__"} 

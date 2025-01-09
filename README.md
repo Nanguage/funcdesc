@@ -34,9 +34,11 @@
   + Parse JSON string to get description object.
 * Utility functions for edit function's signature.
 * Function guard can be used for checking inputs, outputs and side effects.
-* **TODO** Support docstring.
-  + Parse docstring to get description object.
-  + Convert description object to docstring.
+* Convert description object to pydantic models.
+* Support docstring.
+  + Update description object using docstring.
+  + **TODO** Parse docstring to get description object.
+  + **TODO** Convert description object to docstring.
 
 
 ## Concept
