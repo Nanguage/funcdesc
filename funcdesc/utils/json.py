@@ -25,7 +25,7 @@ class DescriptionJSONEncoder(json.JSONEncoder):
                 t = None
             elif o.type.__module__ == "typing":
                 t = str(o.type)
-            elif isinstance(o.type, T.GenericAlias):
+            elif isinstance(o.type, T.GenericAlias):  # type: ignore
                 t = str(o.type)
             else:
                 t = o.type.__name__
@@ -61,7 +61,7 @@ class DescriptionJSONDecoder(json.JSONDecoder):
         if isinstance(v["type"], str):
             try:
                 t = eval(v["type"], env)
-            except Exception as e:
+            except NameError:
                 warnings.warn(
                     f"Failed to eval type {v['type']}, "
                     "using the original string as type."
