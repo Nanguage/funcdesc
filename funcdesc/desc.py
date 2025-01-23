@@ -171,8 +171,12 @@ class Description():
         return json_str
 
     @classmethod
-    def from_json(cls, json_str: str) -> "Description":
-        return DescriptionJSONDecoder().decode(json_str)
+    def from_json(
+            cls,
+            json_str: str,
+            env: T.Optional[T.Dict[str, T.Any]] = None
+            ) -> "Description":
+        return DescriptionJSONDecoder().decode(json_str, env=env)
 
     def __repr__(self) -> str:
         return (

@@ -1,5 +1,5 @@
 import typing as T
-import typing
+import warnings
 import json
 
 if T.TYPE_CHECKING:  # pragma: no cover
@@ -24,6 +24,8 @@ class DescriptionJSONEncoder(json.JSONEncoder):
             if o.type is None:
                 t = None
             elif o.type.__module__ == "typing":
+                t = str(o.type)
+            elif isinstance(o.type, T.GenericAlias):
                 t = str(o.type)
             else:
                 t = o.type.__name__
@@ -51,9 +53,25 @@ class DescriptionJSONDecoder(json.JSONDecoder):
             env: T.Optional[T.Dict[str, T.Any]] = None
             ) -> "Value":
         from ..desc import Value, NotDef
-        t = eval(v["type"], env) if isinstance(v["type"], str) else v["type"]
-        r = eval(v["range"], env) \
-            if isinstance(v["range"], str) else v["range"]
+        import typing
+
+        if env is not None:
+            env["typing"] = typing
+
+        if isinstance(v["type"], str):
+            try:
+                t = eval(v["type"], env)
+            except Exception as e:
+                warnings.warn(
+                    f"Failed to eval type {v['type']}, "
+                    "using the original string as type."
+                )
+                t = v["type"]
+        else:
+            t = v["type"]
+
+        r = v["range"]
+
         if v["default"] == "not_defined":
             d = NotDef
         else:

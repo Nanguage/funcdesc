@@ -223,6 +223,41 @@ def test_serialization():
     assert desc_add == desc_add2
 
 
+def test_serialization2():
+    class Position:
+        def __init__(self, x: int, y: int):
+            self.x = x
+            self.y = y
+
+    def get_position(x: int, y: int) -> Position:
+        return Position(x, y)
+
+    desc = parse_func(get_position)
+    ser = desc.to_json()
+    desc2 = Description.from_json(ser, env=locals())
+    assert desc == desc2
+    with pytest.warns(UserWarning):
+        Description.from_json(ser)
+
+
+def test_serialization3():
+    def get_list() -> list[int]:
+        return [1, 2, 3]
+
+    desc = parse_func(get_list)
+    ser = desc.to_json()
+    desc2 = Description.from_json(ser)
+    assert desc == desc2
+
+    def get_dict() -> T.Dict[str, int]:
+        return {"a": 1, "b": 2, "c": 3}
+
+    desc = parse_func(get_dict)
+    ser = desc.to_json()
+    desc2 = Description.from_json(ser)
+    assert desc == desc2
+
+
 def test_class_method():
     class A():
 
