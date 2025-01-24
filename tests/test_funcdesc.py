@@ -258,6 +258,22 @@ def test_serialization3():
     assert desc == desc2
 
 
+def test_serialization4():
+    class Position:
+        def __init__(self, x: int, y: int):
+            self.x = x
+            self.y = y
+
+    def get_position() -> Position:
+        return Position(1, 2)
+
+    desc = parse_func(get_position)
+    ser = desc.to_json()
+    with pytest.warns(UserWarning):
+        desc2 = Description.from_json(ser)
+    ser = desc2.to_json()
+
+
 def test_class_method():
     class A():
 

@@ -23,6 +23,8 @@ class DescriptionJSONEncoder(json.JSONEncoder):
         elif isinstance(o, Value):
             if o.type is None:
                 t = None
+            elif isinstance(o.type, str):
+                t = o.type
             elif o.type.__module__ == "typing":
                 t = str(o.type)
             elif isinstance(o.type, T.GenericAlias):  # type: ignore
