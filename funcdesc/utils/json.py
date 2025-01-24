@@ -1,3 +1,4 @@
+import types
 import typing as T
 import warnings
 import json
@@ -27,7 +28,8 @@ class DescriptionJSONEncoder(json.JSONEncoder):
                 t = o.type
             elif o.type.__module__ == "typing":
                 t = str(o.type)
-            elif isinstance(o.type, T.GenericAlias):  # type: ignore
+            elif isinstance(
+                    o.type, (T.GenericAlias, types.UnionType)):  # type: ignore
                 t = str(o.type)
             else:
                 t = o.type.__name__

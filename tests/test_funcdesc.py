@@ -257,6 +257,22 @@ def test_serialization3():
     desc2 = Description.from_json(ser)
     assert desc == desc2
 
+    def get_str_or_int() -> T.Union[str, int]:
+        return "1"
+
+    desc = parse_func(get_str_or_int)
+    ser = desc.to_json()
+    desc2 = Description.from_json(ser)
+    assert desc == desc2
+
+    def get_str_or_int2() -> str | int:
+        return "1"
+
+    desc = parse_func(get_str_or_int2)
+    ser = desc.to_json()
+    desc2 = Description.from_json(ser)
+    assert desc == desc2
+
 
 def test_serialization4():
     class Position:
@@ -272,6 +288,8 @@ def test_serialization4():
     with pytest.warns(UserWarning):
         desc2 = Description.from_json(ser)
     ser = desc2.to_json()
+    with pytest.warns(UserWarning):
+        Description.from_json(ser)
 
 
 def test_class_method():
