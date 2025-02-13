@@ -14,4 +14,4 @@ __all__ = [
     "Val", "Outputs"
 ]
 
-__version__ = '0.1.7.2'
+__version__ = '0.1.8'
