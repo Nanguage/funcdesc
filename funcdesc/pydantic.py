@@ -1,16 +1,18 @@
 import typing as T
 
-from .desc import Description, Value
+from .desc import Description, Value, NotDef
 from .parse import parse_func
 
 from pydantic import create_model, Field
 
 
 def value_to_field(value: Value):
-    field = Field(
-        default=value.default,
-        description=value.doc,
-    )
+    kwargs = {
+        "description": value.doc,
+    }
+    if value.default is not NotDef:
+        kwargs["default"] = value.default
+    field = Field(**kwargs)
     return field
 
 
