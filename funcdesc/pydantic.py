@@ -11,8 +11,8 @@ def value_to_field(value: Value):
         "description": value.doc,
     }
     if value.default is not NotDef:
-        kwargs["default"] = value.default
-    field = Field(**kwargs)
+        kwargs["default"] = value.default  # type: ignore
+    field = Field(**kwargs)  # type: ignore
     return field
 
 
