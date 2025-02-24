@@ -59,6 +59,13 @@ class DescriptionJSONDecoder(json.JSONDecoder):
         from ..desc import Value, NotDef
         import typing
 
+        # fill the missing values with default values
+        v['type'] = v.get('type', None)
+        v['range'] = v.get('range', None)
+        v['default'] = v.get('default', NotDef)
+        v['name'] = v.get('name', None)
+        v['doc'] = v.get('doc', None)
+
         if env is not None:
             env["typing"] = typing
 
@@ -103,11 +110,15 @@ class DescriptionJSONDecoder(json.JSONDecoder):
         jdict = super().decode(s)
         desc = Description()
         desc.name = jdict["name"]
-        desc.doc = jdict["doc"]
-        desc.inputs = [self.decode_value(v, env) for v in jdict["inputs"]]
-        desc.outputs = [self.decode_value(v, env) for v in jdict["outputs"]]
+        desc.doc = jdict.get("doc", "")
+        desc.inputs = [
+            self.decode_value(v, env) for v in jdict.get("inputs", [])
+        ]
+        desc.outputs = [
+            self.decode_value(v, env) for v in jdict.get("outputs", [])
+        ]
         desc.side_effects = [
-            self.decode_side_effect(v) for v in jdict["side_effects"]
+            self.decode_side_effect(v) for v in jdict.get("side_effects", [])
         ]
         return desc
 
