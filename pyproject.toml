@@ -10,7 +10,7 @@ authors = [
 ]
 description = "Establish a general function description protocol, which can realize a comprehensive description of the input, output and side effects of an target function through an Python object. Provide a unified abstraction for parameter checking, interface generation and other functions in applications such as oneFace."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 license = {text = "MIT"}
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -18,9 +18,10 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 keywords = ["funcdesc"]
 
