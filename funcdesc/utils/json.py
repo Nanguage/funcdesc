@@ -33,15 +33,18 @@ class DescriptionJSONEncoder(json.JSONEncoder):
                 t = str(o.type)
             else:
                 t = o.type.__name__
+            d: str | object
+            if isinstance(o.default, _NotDef):
+                d = "not_defined"
+            else:
+                d = o.default
             return {
                 "type": t,
                 "range": o.range,
-                "default": o.default,
+                "default": d,
                 "name": o.name,
                 "doc": o.doc,
             }
-        elif isinstance(o, _NotDef):
-            return "not_defined"
         elif isinstance(o, SideEffect):
             return {
                 "description": o.description,
