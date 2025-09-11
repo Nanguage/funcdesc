@@ -170,7 +170,10 @@ class Description():
         return DescriptionJSONEncoder().default(self)
 
     @classmethod
-    def from_dict(cls, d: T.Dict[str, T.Any], env: T.Optional[T.Dict[str, T.Any]] = None) -> "Description":
+    def from_dict(
+            cls,
+            d: T.Dict[str, T.Any], env: T.Optional[T.Dict[str, T.Any]] = None
+            ) -> "Description":
         return DescriptionJSONDecoder().decode_description(d, env=env)
 
     def to_json(self) -> str:

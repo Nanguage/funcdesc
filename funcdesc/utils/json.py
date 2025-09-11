@@ -121,6 +121,7 @@ class DescriptionJSONDecoder(json.JSONDecoder):
         ]
         return desc
 
-    def decode(self, s, **kwargs) -> T.Any:
+    def decode(self, *args, **kwargs) -> T.Any:
+        s = args[0]
         jdict = super().decode(s)
         return self.decode_description(jdict, **kwargs)
