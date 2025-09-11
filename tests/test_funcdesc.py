@@ -222,6 +222,10 @@ def test_serialization():
     desc_add2 = Description.from_json(desc_add_json)
     assert desc_add == desc_add2
 
+    desc_add_dict = desc_add.to_dict()
+    desc_add3 = Description.from_dict(desc_add_dict)
+    assert desc_add == desc_add3
+
 
 def test_serialization2():
     class Position:
@@ -239,6 +243,10 @@ def test_serialization2():
     with pytest.warns(UserWarning):
         Description.from_json(ser)
 
+    desc_dict = desc.to_dict()
+    desc3 = Description.from_dict(desc_dict, env=locals())
+    assert desc == desc3
+
 
 def test_serialization3():
     def get_list() -> list[int]:
@@ -249,6 +257,10 @@ def test_serialization3():
     desc2 = Description.from_json(ser)
     assert desc == desc2
 
+    desc_dict = desc.to_dict()
+    desc3 = Description.from_dict(desc_dict)
+    assert desc == desc3
+
     def get_dict() -> T.Dict[str, int]:
         return {"a": 1, "b": 2, "c": 3}
 
@@ -256,6 +268,10 @@ def test_serialization3():
     ser = desc.to_json()
     desc2 = Description.from_json(ser)
     assert desc == desc2
+
+    desc_dict = desc.to_dict()
+    desc3 = Description.from_dict(desc_dict)
+    assert desc == desc3
 
     def get_str_or_int() -> T.Union[str, int]:
         return "1"
@@ -265,6 +281,10 @@ def test_serialization3():
     desc2 = Description.from_json(ser)
     assert desc == desc2
 
+    desc_dict = desc.to_dict()
+    desc3 = Description.from_dict(desc_dict)
+    assert desc == desc3
+
     def get_str_or_int2() -> str | int:
         return "1"
 
@@ -272,6 +292,10 @@ def test_serialization3():
     ser = desc.to_json()
     desc2 = Description.from_json(ser)
     assert desc == desc2
+    
+    desc_dict = desc.to_dict()
+    desc3 = Description.from_dict(desc_dict)
+    assert desc == desc3
 
 
 def test_serialization4():
@@ -287,9 +311,18 @@ def test_serialization4():
     ser = desc.to_json()
     with pytest.warns(UserWarning):
         desc2 = Description.from_json(ser)
+
+    desc_dict = desc.to_dict()
+    with pytest.warns(UserWarning):
+        Description.from_dict(desc_dict)
+
     ser = desc2.to_json()
     with pytest.warns(UserWarning):
         Description.from_json(ser)
+
+    desc_dict = desc2.to_dict()
+    with pytest.warns(UserWarning):
+        Description.from_dict(desc_dict)
 
 
 def test_class_method():

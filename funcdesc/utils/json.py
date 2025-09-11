@@ -103,11 +103,10 @@ class DescriptionJSONDecoder(json.JSONDecoder):
 
     def decode_description(
             self,
-            s: str,
+            jdict: T.Dict[str, T.Any],
             env: T.Optional[T.Dict[str, T.Any]] = None
             ) -> "Description":
         from ..desc import Description
-        jdict = super().decode(s)
         desc = Description()
         desc.name = jdict["name"]
         desc.doc = jdict.get("doc", "")
@@ -122,5 +121,6 @@ class DescriptionJSONDecoder(json.JSONDecoder):
         ]
         return desc
 
-    def decode(self, *args, **kwargs) -> T.Any:
-        return self.decode_description(*args, **kwargs)
+    def decode(self, s, **kwargs) -> T.Any:
+        jdict = super().decode(s)
+        return self.decode_description(jdict, **kwargs)
